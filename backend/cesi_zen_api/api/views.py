@@ -50,12 +50,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
-    def get_permissions(self):
-        if self.action in ["list", "retrieve"]:
-            permission_classes = [permissions.AllowAny]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return permission_classes
+    # def get_permissions(self):
+    #     if self.action in ["list", "retrieve"]:
+    #         permission_classes = [permissions.AllowAny]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return permission_classes
 
 
 class FavoriteViewSet(viewsets.ModelViewSet):
