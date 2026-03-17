@@ -1,0 +1,43 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="retourHub()" color="dark">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding ion-text-center">
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    
+    <div 
+      class="breathing-circle"
+      [class.anim-inhale]="isPlaying && phase === 'inhale'"
+      [class.anim-hold]="isPlaying && phase === 'hold'"
+      [class.anim-exhale]="isPlaying && phase === 'exhale'"
+      [style.transition-duration]="getTransitionDuration()">
+      
+      <h2>{{ getPhaseText() }}</h2>
+      <h1 *ngIf="isPlaying">{{ counter }}</h1>
+    </div>
+
+    <p>{{ isPlaying ? "Concentre-toi sur ta respiration..." : "Appuie sur le bouton lecture pour lancer l'exercice" }}</p>
+
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border" style="background: transparent;">
+  <div class="control-block">
+    <ion-button class="play-button" (click)="togglePlay()">
+      <ion-icon [name]="isPlaying ? 'pause' : 'play'"></ion-icon>
+    </ion-button>
+
+    <ion-select [value]="currentExercice" (ionChange)="changerExercice($event)" interface="popover" style="flex: 1; margin-left: 15px;">
+      @for (exo of exercices; track exo) {
+        <ion-select-option [value]="exo">{{ exo.name }}</ion-select-option>
+      }
+    </ion-select>
+    
+  </div>
+</ion-footer>

@@ -11,18 +11,16 @@ import {
   IonInputPasswordToggle,
   IonButton,
 } from '@ionic/angular/standalone';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 
 @Component({
-  selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss'],
+  selector: 'app-user',
+  templateUrl: 'user.page.html',
+  styleUrls: ['user.page.scss'],
   imports: [
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
-    ExploreContainerComponent,
     IonLabel,
     IonInput,
     IonInputPasswordToggle,
@@ -30,7 +28,7 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
     IonButton,
   ],
 })
-export class Tab3Page {
+export class UserPage {
   username: String = '';
   password: String = '';
   constructor() {}
