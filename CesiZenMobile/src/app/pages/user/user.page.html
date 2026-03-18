@@ -1,16 +1,62 @@
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Mon Compte</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <div>
-    <ion-label>Nom d'utilisateur :</ion-label>
-    <ion-input type="text" [(ngModel)]="username"></ion-input>
-    <ion-label>Mot de passe :</ion-label>
-    <ion-input type="password" [(ngModel)]="password" ></ion-input>
-      <!-- <ion-button (click)="seConnecter()">Se connecter</ion-button> -->
+<ion-content class="ion-padding">
+  @if (!isLoggedIn) {
+  <div style="max-width: 400px; margin: 0 auto; margin-top: 40px;">
+    <div class="zen-segment-container">
+        <ion-segment [(ngModel)]="authMode" mode="ios" class="zen-segment">
+          <ion-segment-button value="login">
+            <ion-label>Connexion</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="register">
+            <ion-label>Inscription</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+    <ion-item class="custom-input ion-margin-bottom" lines="full">
+        <ion-input type="text" [(ngModel)]="username" label="Nom d'utilisateur" labelPlacement="floating"></ion-input>
+      </ion-item>
+
+      <ion-item class="custom-input ion-margin-bottom" lines="full">
+        <ion-input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" label="Mot de passe" labelPlacement="floating"></ion-input>
+        <ion-icon slot="end" [name]="showPassword ? 'eye-off' : 'eye'" (click)="showPassword = !showPassword" style="cursor: pointer; opacity: 0.6; align-self: center; margin-top: 20px;"></ion-icon>
+      </ion-item>
+
+      @if (authMode === 'register') {
+        <ion-item class="custom-input ion-margin-bottom" lines="full">
+          <ion-input type="password" [(ngModel)]="passwordConfirm" label="Confirmer le mot de passe" labelPlacement="floating"></ion-input>
+        </ion-item>
+      }
+
+    @if (authMode === 'login') {
+        <ion-button expand="block" (click)="seConnecter()" class="zen-btn" style="margin-top: 30px;">
+          Se connecter
+        </ion-button>
+      } @else {
+        <ion-button expand="block" (click)="sInscrire()" class="zen-btn" style="margin-top: 30px;">
+          Créer mon compte
+        </ion-button>
+      }
+
   </div> 
+}@else {
+    <div style="max-width: 400px; margin: 0 auto; margin-top: 40px; text-align: center;">
+      
+      <ion-avatar style="width: 120px; height: 120px; margin: 0 auto 20px;">
+        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
+      </ion-avatar>
+      
+      <h2 style="color: #2C3E2E;">Bienvenue !</h2>
+      <p style="color: #5F6F62; margin-bottom: 40px;">Prêt pour votre séance de respiration ?</p>
 
+      <ion-button fill="outline" color="danger" (click)="seDeconnecter()" expand="block">
+        Se déconnecter
+      </ion-button>
+      
+    </div>
+  }
 </ion-content>

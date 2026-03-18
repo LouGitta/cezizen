@@ -1,5 +1,7 @@
 from django.contrib.auth.models import Group, User
 from rest_framework import permissions, viewsets, generics
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from .serializer import (
     GroupSerializer,
@@ -56,6 +58,21 @@ class ArticleViewSet(viewsets.ModelViewSet):
     #     else:
     #         permission_classes = [permissions.IsAdminUser]
     #     return permission_classes
+
+    @action(
+        detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated]
+    )
+    def favorite(self, request, pk=None):
+        article = self.get_object()
+        user = request.user
+
+        favorite, created = Favorite.objects.get_or_create(user=user, article=article)
+
+        if not created:
+            favorite.delete()
+            return Response({"status": "removed", "is_favorite": False})
+
+        return Response({"status": "added", "is_favorite": True})
 
 
 class FavoriteViewSet(viewsets.ModelViewSet):

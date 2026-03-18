@@ -1,34 +1,69 @@
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Accueil</ion-title>
-    </ion-toolbar>
-  </ion-header>
- <ion-grid>
-  <ion-row>
-    @for (article of articles; track article.id) {
-      <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
-        <ion-card>
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
-          <ion-card-header>
-            <ion-card-title>{{article.title}}</ion-card-title>
-            <ion-card-subtitle>{{article.published | date:'dd MMMM yyyy'}}</ion-card-subtitle>
-          </ion-card-header>
+<ion-header class="ion-no-border zen-header">
+  
+  <ion-toolbar class="zen-top-toolbar">
+    <ion-buttons slot="start"></ion-buttons>
+    
+    <ion-title class="zen-main-title">Articles</ion-title>
+    
+    <ion-buttons slot="end"></ion-buttons>
+  </ion-toolbar>  
 
-          <ion-card-content>
-            {{article.content | firstSentence}}
-          </ion-card-content>
-          <ion-grid >
-            <ion-button fill="clear">Lire la suite
-              <ion-icon slot="end" name="arrow-forward"/>
-            </ion-button>
-          </ion-grid>
-        </ion-card>
-      </ion-col>
-    } @empty {
-      <p> No article</p>
+  <ion-toolbar class="zen-segment-toolbar">
+    <ion-segment [(ngModel)]="selectedCategory" mode="ios" class="zen-segment">
+      <ion-segment-button [value]="0">
+        <ion-label>Tous</ion-label>
+      </ion-segment-button>
+      @if (false) {
+        <ion-segment-button [value]="4">
+        <ion-label>Favoris</ion-label>
+      </ion-segment-button>
+      }
+      <ion-segment-button [value]="1">
+        <ion-label>Sommeil</ion-label>
+      </ion-segment-button>
+      <ion-segment-button [value]="2">
+        <ion-label>Stress</ion-label>
+      </ion-segment-button>
+      <ion-segment-button [value]="3">
+        <ion-label>Énergie</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+  
+</ion-header>
+
+<ion-content class="zen-content ion-padding">
+
+  <div class="articles-grid">
+    @for (article of filteredArticles; track article.id) {
+      
+      <ion-card class="zen-card" mode="ios" button="true" (click)="goToArticle(article.id, article)">
+        <div class="zen-favorite-btn" (click)="toggleFavorite($event, article)">
+          <ion-icon 
+            [name]="article.is_favorite ? 'heart' : 'heart-outline'" 
+            [color]="article.is_favorite ? 'danger' : 'medium'">
+          </ion-icon>
+        </div>
+        <ion-img src="https://ionicframework.com/docs/img/demos/card-media.png" [alt]="article.title"></ion-img>
+        
+        <ion-card-header>
+          <ion-card-title class="zen-card-title">{{ article.title }}</ion-card-title>
+          <p class="zen-card-date">{{ article.date | date:'d MMMM yyyy' }}</p>
+        </ion-card-header>
+
+        <ion-card-content class="zen-card-action">
+          <span>Voir le contenu</span>
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </ion-card-content>
+      </ion-card>
+
     }
-  </ion-row>
-</ion-grid>
+    
+    @if (filteredArticles.length === 0) {
+      <div class="ion-text-center zen-empty-state">
+        <p>Aucun article dans cette catégorie pour le moment.</p>
+      </div>
+    }
+  </div>
 
 </ion-content>

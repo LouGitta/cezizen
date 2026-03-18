@@ -30,7 +30,7 @@ export const routes: Routes = [
       import('../pages/breathing/breathing.page').then((m) => m.BreathingPage),
   },
   {
-    path: 'article/:name',
+    path: 'article/:id',
     loadComponent: () =>
       import('../pages/article/article.page').then((m) => m.ArticlePage),
   },

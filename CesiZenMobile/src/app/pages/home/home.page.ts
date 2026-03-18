@@ -4,22 +4,23 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonCol,
-  IonGrid,
-  IonRow,
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonCardSubtitle,
   IonCardContent,
-  IonButton,
   IonIcon,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  IonButtons,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward } from 'ionicons/icons';
+import { arrowForwardOutline, heart, heartOutline } from 'ionicons/icons';
 import { articleServices } from '../../services/articlesServices/articles';
 import { CommonModule } from '@angular/common';
-import { FirstSentencePipe } from '../../pipes/firstSentence.pipe';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -31,27 +32,65 @@ import { FirstSentencePipe } from '../../pipes/firstSentence.pipe';
     IonToolbar,
     IonTitle,
     IonContent,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonCard,
     IonCardHeader,
     IonCardTitle,
-    IonCardSubtitle,
     IonCardContent,
-    FirstSentencePipe,
-    IonButton,
     IonIcon,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    FormsModule,
+    IonButtons,
+    IonImg,
   ],
 })
 export class HomePage implements OnInit {
   articles: any = [];
-  constructor(private articlesSrv: articleServices) {
-    addIcons({ arrowForward });
+  selectedCategory: any = 0;
+  constructor(
+    private articlesSrv: articleServices,
+    private router: Router,
+  ) {
+    addIcons({ arrowForwardOutline, heart, heartOutline });
   }
   ngOnInit() {
     this.articlesSrv.getAllArticles().subscribe({
       next: (data: any) => (this.articles = data),
     });
+  }
+  get filteredArticles() {
+    if (this.selectedCategory === 0) {
+      return this.articles;
+    }
+    if (this.selectedCategory === 'favoris') {
+      return this.articles.filter(
+        (article: any) => article.is_favorite === true,
+      );
+    }
+
+    return this.articles.filter(
+      (article: any) => article.category === this.selectedCategory,
+    );
+  }
+  toggleFavorite(event: Event, article: any) {
+    event.stopPropagation();
+    article.is_favorite = !article.is_favorite;
+
+    this.articlesSrv.toggleFavorite(article.id).subscribe({
+      next: (res: any) => {
+        console.log('Favori synchronisé avec Django !', res);
+        article.is_favorite = res.is_favorite;
+      },
+      error: (err) => {
+        console.error('Erreur de synchronisation :', err);
+        article.is_favorite = !article.is_favorite;
+      },
+    });
+  }
+
+  goToArticle(id: Number, article: any) {
+    this.articlesSrv.readArticle(article);
+    this.router.navigate(['/article', id]);
   }
 }

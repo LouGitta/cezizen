@@ -41,9 +41,17 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
+    is_favorite = serializers.SerializerMethodField()
+
     class Meta:
         model = Article
-        fields = "__all__"
+        fields = ["id", "title", "content", "published", "category", "is_favorite"]
+
+    def get_is_favorite(self, obj):
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return Favorite.objects.filter(user=request.user, article=obj).exists()
+        return False
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

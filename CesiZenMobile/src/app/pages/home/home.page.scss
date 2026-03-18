@@ -1,0 +1,131 @@
+.zen-favorite-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10; 
+  
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: 50%; 
+  
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animation de rebond */
+
+  &:active {
+    transform: scale(0.8);
+  }
+
+  ion-icon {
+    font-size: 1.5rem;
+    margin-top: 2px;
+  }
+}
+
+.zen-header {
+  background: #F8F9F8;
+  padding-top: 10px;
+}
+
+.zen-content {
+  --background: #F8F9F8;
+}
+
+.zen-top-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  --min-height: 50px;
+}
+
+.zen-main-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2C3E2E;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.zen-segment-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  --padding-bottom: 10px;
+}
+
+.zen-segment {
+  --background: transparent;
+  margin: 0 10px;
+
+  ion-segment-button {
+    --color: #A0ABA1; 
+    --color-checked: #2C3E2E; 
+    
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-transform: none;
+    min-height: 38px;
+    margin: 0 4px;
+  }
+  
+  &::part(indicator-background) {
+    border-radius: 20px;
+    background: #E8F4F8;
+    box-shadow: none;
+  }
+}
+
+.zen-card {
+  margin: 0 0 25px 0;
+  border-radius: 24px;
+  background: #FFFFFF;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+
+  ion-img {
+    height: 140px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  ion-card-header {
+    padding: 20px 20px 5px 20px;
+  }
+
+  .zen-card-title {
+    font-size: 1.2rem;
+    color: #4A4A4A;
+    font-weight: 500;
+    line-height: 1.3;
+    margin-bottom: 5px;
+  }
+
+  .zen-card-date {
+    font-size: 0.85rem;
+    color: #9B9B9B;
+    margin: 0;
+  }
+
+  ion-card-content.zen-card-action {
+    padding: 10px 20px 20px 20px;
+    display: flex;
+    align-items: center;
+    color: #A8D5E2;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+
+    ion-icon {
+      margin-left: 8px;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.zen-empty-state {
+  margin-top: 40px; 
+  color: #9B9B9B;
+}

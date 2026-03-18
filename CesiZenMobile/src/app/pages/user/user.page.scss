@@ -1,0 +1,46 @@
+.zen-header, .zen-content {
+  background: #F8F9F8;
+  --background: #F8F9F8;
+}
+
+.zen-top-toolbar {
+  --background: transparent;
+  --border-width: 0;
+}
+
+.zen-main-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2C3E2E;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.zen-segment-container {
+  margin-bottom: 30px;
+}
+
+.zen-segment {
+  --background: #E8F4F8;
+  border-radius: 30px;
+  padding: 4px;
+
+  ion-segment-button {
+    --color: #5F6F62;
+    --color-checked: #2C3E2E;
+    --background-checked: #FFFFFF;
+    --border-radius: 25px; 
+    
+    font-weight: 500;
+    font-size: 0.95rem;
+    min-height: 38px;
+  }
+}
+
+.zen-btn {
+  --background: #A8D5E2;
+  --color: #2C3E2E;
+  --border-radius: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(168, 213, 226, 0.4);}
