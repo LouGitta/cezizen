@@ -18,6 +18,7 @@ import { LOCALE_ID, importProvidersFrom } from '@angular/core';
 import localeFr from '@angular/common/locales/fr';
 import { registerLocaleData } from '@angular/common';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { Drivers, Storage } from '@ionic/storage';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -28,6 +29,11 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withInterceptors([authInterceptor])),
-    importProvidersFrom(IonicStorageModule.forRoot()),
+    importProvidersFrom(
+      IonicStorageModule.forRoot({
+        name: '__czdb',
+        driverOrder: [Drivers.LocalStorage, Drivers.IndexedDB],
+      })
+    ),
   ],
 });

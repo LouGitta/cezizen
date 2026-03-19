@@ -13,8 +13,8 @@
       <ion-segment-button [value]="0">
         <ion-label>Tous</ion-label>
       </ion-segment-button>
-      @if (false) {
-        <ion-segment-button [value]="4">
+      @if (isLoggedIn) {
+        <ion-segment-button value="favoris">
         <ion-label>Favoris</ion-label>
       </ion-segment-button>
       }
@@ -25,7 +25,7 @@
         <ion-label>Stress</ion-label>
       </ion-segment-button>
       <ion-segment-button [value]="3">
-        <ion-label>Énergie</ion-label>
+        <ion-label>Anxiété</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>

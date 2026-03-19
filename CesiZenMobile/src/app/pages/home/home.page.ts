@@ -21,6 +21,7 @@ import { articleServices } from '../../services/articlesServices/articles';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthServices } from 'src/app/services/authServices/auth-services';
 
 @Component({
   selector: 'app-home',
@@ -48,29 +49,37 @@ import { FormsModule } from '@angular/forms';
 export class HomePage implements OnInit {
   articles: any = [];
   selectedCategory: any = 0;
+  isLoggedIn: boolean = false;
   constructor(
     private articlesSrv: articleServices,
-    private router: Router,
+    private authSrv: AuthServices,
+    private router: Router
   ) {
     addIcons({ arrowForwardOutline, heart, heartOutline });
   }
-  ngOnInit() {
+
+  ngOnInit() {}
+
+  async ionViewWillEnter() {
     this.articlesSrv.getAllArticles().subscribe({
       next: (data: any) => (this.articles = data),
     });
+    this.isLoggedIn = await this.authSrv.isAuthenticated();
   }
+
   get filteredArticles() {
     if (this.selectedCategory === 0) {
       return this.articles;
     }
+    console.log(this.selectedCategory);
     if (this.selectedCategory === 'favoris') {
       return this.articles.filter(
-        (article: any) => article.is_favorite === true,
+        (article: any) => article.is_favorite === true
       );
     }
 
     return this.articles.filter(
-      (article: any) => article.category === this.selectedCategory,
+      (article: any) => article.category === this.selectedCategory
     );
   }
   toggleFavorite(event: Event, article: any) {
@@ -79,11 +88,9 @@ export class HomePage implements OnInit {
 
     this.articlesSrv.toggleFavorite(article.id).subscribe({
       next: (res: any) => {
-        console.log('Favori synchronisé avec Django !', res);
         article.is_favorite = res.is_favorite;
       },
       error: (err) => {
-        console.error('Erreur de synchronisation :', err);
         article.is_favorite = !article.is_favorite;
       },
     });

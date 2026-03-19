@@ -6,19 +6,13 @@ import { Storage } from '@ionic/storage-angular';
 })
 export class StorageService {
   private _storage: Storage | null = null;
-  private isInitializing = false;
 
   constructor(private storage: Storage) {
     this.init();
   }
 
   async init() {
-    if (this._storage != null || this.isInitializing) return;
-
-    this.isInitializing = true;
-    const storage = await this.storage.create();
-    this._storage = storage;
-    this.isInitializing = false;
+    this._storage = await this.storage.create();
   }
 
   public async set(key: string, value: any) {

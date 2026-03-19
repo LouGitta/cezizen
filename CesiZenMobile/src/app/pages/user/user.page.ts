@@ -13,13 +13,24 @@ import {
   IonSegment,
   IonSegmentButton,
   IonLabel,
+  IonList,
+  IonCard,
+  IonButtons,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { eye, eyeOff } from 'ionicons/icons';
+import {
+  eye,
+  eyeOff,
+  settingsOutline,
+  flame,
+  time,
+  heart,
+  statsChart,
+  notifications,
+  logOutOutline,
+} from 'ionicons/icons';
 import { AuthServices } from 'src/app/services/authServices/auth-services';
-import { StorageService } from 'src/app/services/storage/storage';
-import { Subscription } from 'rxjs';
-import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-user',
   templateUrl: 'user.page.html',
@@ -39,6 +50,9 @@ import { CommonModule } from '@angular/common';
     IonSegment,
     IonSegmentButton,
     IonLabel,
+    IonList,
+    IonCard,
+    IonButtons,
   ],
 })
 export class UserPage {
@@ -49,32 +63,35 @@ export class UserPage {
   showPassword: boolean = false;
   isLoggedIn: boolean = false;
   authMode: 'login' | 'register' = 'login';
-  private authSub!: Subscription;
 
-  constructor(
-    private authSrv: AuthServices,
-    private storageSrv: StorageService,
-  ) {
-    addIcons({ eye, eyeOff });
-  }
-
-  async ngOnInit() {
-    this.authSub = this.authSrv.isLoggedIn$.subscribe((etat) => {
-      this.isLoggedIn = etat;
+  constructor(private authSrv: AuthServices) {
+    addIcons({
+      eye,
+      eyeOff,
+      settingsOutline,
+      flame,
+      time,
+      heart,
+      statsChart,
+      notifications,
+      logOutOutline,
     });
   }
-  ngOnDestroy() {
-    if (this.authSub) {
-      this.authSub.unsubscribe();
-    }
+
+  ngOnInit() {}
+
+  async ionViewWillEnter() {
+    this.isLoggedIn = await this.authSrv.isAuthenticated();
   }
 
   seConnecter() {
     const user = { username: this.username, password: this.password };
     this.authSrv.login(user).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Connexion réussie !', response);
         this.password = '';
         this.username = '';
+        this.isLoggedIn = true;
       },
       error: (err) => console.error('Erreur :', err),
     });
@@ -99,5 +116,6 @@ export class UserPage {
 
   async seDeconnecter() {
     await this.authSrv.logout();
+    this.isLoggedIn = false;
   }
 }

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  url: 'http://127.0.0.1:8000/api/',
+  url: 'http://10.250.47.229:8000/api/',
   authUrl: 'auth/',
   apiVersion: 'v1/',
 };
