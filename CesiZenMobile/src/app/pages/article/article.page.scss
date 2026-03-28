@@ -1,0 +1,94 @@
+/* Rendre le header transparent pour que l'image passe en dessous */
+ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+/* --- BANNIÈRE IMAGE --- */
+.article-hero {
+  width: 100%;
+  height: 35vh; /* Prend 35% de la hauteur de l'écran */
+  position: relative;
+  background-color: #e9ecef;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Coupe l'image proprement sans l'écraser */
+  }
+}
+
+/* --- CORPS DE L'ARTICLE --- */
+.article-body {
+  position: relative;
+  background: #ffffff;
+  padding: 30px 20px;
+  
+  /* L'effet magique : la carte remonte sur l'image avec des bords arrondis */
+  margin-top: -30px; 
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  
+  /* Une petite ombre douce pour détacher la carte de l'image */
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+  min-height: 65vh; /* S'assure que le blanc descend jusqu'en bas */
+}
+
+/* --- EN-TÊTE DU TEXTE --- */
+.article-header {
+  margin-bottom: 25px;
+
+  .article-badge {
+    background: rgba(42, 157, 143, 0.1); /* Vert d'eau très clair */
+    color: #2A9D8F;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .article-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2C3E2E; /* Vert très foncé */
+    margin: 15px 0 10px 0;
+    line-height: 1.2;
+  }
+
+  .article-date {
+    font-size: 0.9rem;
+    color: #88998C;
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* --- LE CONTENU (TYPOGRAPHIE) --- */
+.article-text {
+  p {
+    font-size: 1.05rem;
+    line-height: 1.7; /* Très important pour le confort de lecture */
+    color: #4A554D;
+    white-space: pre-wrap;
+    margin-bottom: 20px;
+  }
+}
+
+/* --- CHARGEMENT --- */
+.loading-container {
+  margin-top: 40vh;
+  color: #5F6F62;
+  
+  ion-spinner {
+    transform: scale(1.5);
+    margin-bottom: 15px;
+  }
+}

@@ -13,8 +13,13 @@ export class AuthServices {
   constructor(private http: HttpClient, private storageSrv: StorageService) {}
 
   async isAuthenticated(): Promise<boolean> {
-    const token = await this.storageSrv.get('access_token');
-    return token !== null && token !== undefined;
+    const accessToken = await this.storageSrv.get('access_token');
+    const refreshToken = await this.storageSrv.get('refresh_token');
+
+    const hasAccess = accessToken !== null && accessToken !== undefined;
+    const hasRefresh = refreshToken !== null && refreshToken !== undefined;
+
+    return hasAccess || hasRefresh;
   }
 
   login(user: any): Observable<any> {

@@ -12,21 +12,23 @@ import { environment } from 'src/environments/environment';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const httpBackend = inject(HttpBackend);
   const http = new HttpClient(httpBackend);
-
   const storageSrv = inject(StorageService);
 
   return from(storageSrv.get('access_token')).pipe(
     switchMap((token) => {
       let authReq = req;
+
+      // 1. On attache le token s'il existe (mais on ne fait pas de return ici !)
       if (token) {
         authReq = req.clone({
           headers: req.headers.set('Authorization', `Bearer ${token}`),
         });
-        return next(authReq);
       }
 
+      // 2. On envoie la requête et on écoute la réponse (pour TOUTES les requêtes)
       return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
+          // 3. Si erreur 401 (Token expiré)
           if (
             error.status === 401 &&
             !req.url.includes('login') &&
@@ -39,25 +41,39 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                 if (refreshToken) {
                   const refreshUrl =
                     environment.url + environment.authUrl + 'refresh/';
+
+                  // On demande un nouveau token à Django
                   return http.post(refreshUrl, { refresh: refreshToken }).pipe(
                     switchMap((res: any) => {
+                      // On sauvegarde les nouveaux tokens
                       storageSrv.set('access_token', res.access);
-                      if (res.refresh)
+                      if (res.refresh) {
                         storageSrv.set('refresh_token', res.refresh);
+                      }
+
+                      // On relance la requête originale avec le nouveau sésame
                       const retriedReq = req.clone({
                         headers: req.headers.set(
                           'Authorization',
                           `Bearer ${res.access}`
                         ),
                       });
+
+                      console.log(
+                        '✅ Requête relancée avec le nouveau token !'
+                      );
                       return next(retriedReq);
                     }),
 
                     catchError((refreshErr) => {
+                      // Si le refresh_token est lui aussi périmé, c'est mort.
+                      console.error(
+                        '❌ Echec du rafraîchissement. Suppression des tokens.'
+                      );
                       storageSrv.remove('access_token');
                       storageSrv.remove('refresh_token');
 
-                      // router.navigate(['/tabs/user']);
+                      // Ici, idéalement, tu pourrais utiliser le Router pour renvoyer au login
 
                       return throwError(() => refreshErr);
                     })
@@ -67,6 +83,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               })
             );
           }
+          // Pour toutes les autres erreurs (404, 500, etc.)
           return throwError(() => error);
         })
       );

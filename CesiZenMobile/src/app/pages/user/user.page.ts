@@ -1,3 +1,4 @@
+import { Router, RouterModule } from '@angular/router';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -53,6 +54,7 @@ import { AuthServices } from 'src/app/services/authServices/auth-services';
     IonList,
     IonCard,
     IonButtons,
+    RouterModule,
   ],
 })
 export class UserPage {
@@ -64,7 +66,7 @@ export class UserPage {
   isLoggedIn: boolean = false;
   authMode: 'login' | 'register' = 'login';
 
-  constructor(private authSrv: AuthServices) {
+  constructor(private authSrv: AuthServices, private router: Router) {
     addIcons({
       eye,
       eyeOff,
@@ -117,5 +119,9 @@ export class UserPage {
   async seDeconnecter() {
     await this.authSrv.logout();
     this.isLoggedIn = false;
+  }
+
+  ouvrirParametres() {
+    this.router.navigate(['/settings']);
   }
 }

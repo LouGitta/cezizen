@@ -1,0 +1,59 @@
+<ion-header class="ion-no-border zen-header">
+  <ion-toolbar class="zen-top-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/user" text="Retour" color="dark"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="zen-main-title">Paramètres</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="zen-content ion-padding">
+  
+  <h2 style="color: #2C3E2E; font-size: 1.2rem; margin-top: 10px; margin-bottom: 15px; padding-left: 5px;">
+    Informations légales
+  </h2>
+
+  <ion-accordion-group mode="ios" class="zen-accordion">
+    
+    <ion-accordion value="mentions">
+      <ion-item slot="header" color="light">
+        <ion-icon slot="start" name="document-text-outline" style="color: #5F6F62;"></ion-icon>
+        <ion-label style="font-weight: 500;">Mentions légales</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content" style="background: #ffffff; color: #5F6F62; font-size: 0.9rem; line-height: 1.5;">
+        <p><strong>Éditeur de l'application :</strong> Projet CESIZen (Simulation étudiante).</p>
+        <p><strong>Hébergement :</strong> Serveurs locaux pour le développement.</p>
+        <p>Conformément à la loi "Informatique et Libertés", cette application est un prototype à but pédagogique et n'exploite aucune donnée à des fins commerciales.</p>
+      </div>
+    </ion-accordion>
+
+    <ion-accordion value="privacy">
+      <ion-item slot="header" color="light">
+        <ion-icon slot="start" name="shield-checkmark-outline" style="color: #2A9D8F;"></ion-icon>
+        <ion-label style="font-weight: 500;">Confidentialité & RGPD</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content" style="background: #ffffff; color: #5F6F62; font-size: 0.9rem; line-height: 1.5;">
+        <p>Votre santé mentale est privée.</p>
+        <ul>
+          <li><strong>Exercices :</strong> Aucune donnée n'est enregistrée lors de vos exercices de respiration.</li>
+          <li><strong>Tracker :</strong> Vos données émotionnelles sont strictement personnelles.</li>
+          <li><strong>Droit à l'oubli :</strong> Vous pouvez supprimer votre compte à tout moment depuis l'application.</li>
+        </ul>
+      </div>
+    </ion-accordion>
+
+    <ion-accordion value="about">
+      <ion-item slot="header" color="light">
+        <ion-icon slot="start" name="information-circle-outline" style="color: #E9C46A;"></ion-icon>
+        <ion-label style="font-weight: 500;">À propos de CESIZen</ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content" style="background: #ffffff; color: #5F6F62; font-size: 0.9rem; text-align: center;">
+        <img src="./assets/icon/icon-only.png" alt="Logo" style="width: 50px; margin-bottom: 10px;">
+        <p><strong>Version 1.0.0</strong></p>
+        <p>Développé avec passion pour démocratiser la santé mentale et la prévention du stress.</p>
+      </div>
+    </ion-accordion>
+
+  </ion-accordion-group>
+
+</ion-content>

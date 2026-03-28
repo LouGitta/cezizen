@@ -9,6 +9,7 @@ import {
   IonSelect,
   IonIcon,
   IonButtons,
+  IonTitle,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { BreathingServices } from '../../services/breathingServices/breathing-services';
@@ -16,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { pause, play, arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Router } from '@angular/router';
+import { StorageService } from 'src/app/services/storage/storage';
 
 @Component({
   selector: 'app-breathing',
@@ -33,6 +35,7 @@ import { Router } from '@angular/router';
     CommonModule,
     IonIcon,
     IonButtons,
+    IonTitle,
   ],
 })
 export class BreathingPage implements OnInit {
@@ -46,22 +49,44 @@ export class BreathingPage implements OnInit {
   constructor(
     private exerciceSrv: BreathingServices,
     private router: Router,
+    private storageSrv: StorageService
   ) {
     addIcons({ play, pause, arrowBack });
   }
 
-  ngOnInit() {
+  // 👇 LA MAGIE OPÈRE ICI 👇
+  async ngOnInit() {
+    // 1. OFFLINE : On charge depuis le cache local en priorité
+    const exercicesSauvegardes = await this.storageSrv.get('offline_breathing');
+
+    if (exercicesSauvegardes && exercicesSauvegardes.length > 0) {
+      this.exercices = exercicesSauvegardes;
+      this.currentExercice = this.exercices[0];
+      console.log('📦 Exercices chargés instantanément depuis le cache !');
+    }
+
+    // 2. ONLINE : On essaie de récupérer les nouveautés sur le serveur en arrière-plan
     this.exerciceSrv.getAllExercices().subscribe({
-      next: (data: any) => {
+      next: async (data: any) => {
         this.exercices = data;
 
-        if (this.exercices.length > 0) {
+        // Si on n'avait rien en cache, on initialise l'exercice sélectionné
+        if (!this.currentExercice || !exercicesSauvegardes) {
           this.currentExercice = this.exercices[0];
-
-          console.log('Exercice par défaut :', this.currentExercice);
         }
+
+        // On sauvegarde silencieusement ces données fraîches pour la prochaine fois
+        await this.storageSrv.set('offline_breathing', data);
+        console.log('✅ Synchronisation serveur réussie ! Cache mis à jour.');
       },
-      error: (err) => console.error('Erreur de récupération :', err),
+      error: (err) => {
+        // En cas d'erreur (pas de wifi, serveur éteint), on avertit juste dans la console.
+        // L'utilisateur ne verra pas d'erreur, il utilisera les données de l'étape 1 !
+        console.warn(
+          '📡 Serveur injoignable. Le mode hors-ligne prend le relais.',
+          err
+        );
+      },
     });
   }
 
@@ -73,6 +98,7 @@ export class BreathingPage implements OnInit {
       this.stopExercise();
     }
   }
+
   changerExercice(event: any) {
     this.stopExercise();
     this.isPlaying = false;
@@ -116,6 +142,7 @@ export class BreathingPage implements OnInit {
       this.counter = this.currentExercice.inhale / 1000;
     }
   }
+
   getPhaseText(): string {
     if (!this.isPlaying) return 'PRÊT';
     switch (this.phase) {
@@ -153,6 +180,7 @@ export class BreathingPage implements OnInit {
     const tabBar = document.querySelector('ion-tab-bar');
     if (tabBar) tabBar.style.display = 'none';
   }
+
   ionViewWillLeave() {
     const tabBar = document.querySelector('ion-tab-bar');
     if (tabBar) tabBar.style.display = 'flex';

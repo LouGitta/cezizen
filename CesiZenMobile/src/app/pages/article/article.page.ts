@@ -9,6 +9,7 @@ import {
   IonBackButton,
   IonButton,
   IonButtons,
+  IonSpinner,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { articleServices } from 'src/app/services/articlesServices/articles';
@@ -26,6 +27,7 @@ import { articleServices } from 'src/app/services/articlesServices/articles';
     FormsModule,
     IonBackButton,
     IonButtons,
+    IonSpinner,
   ],
 })
 export class ArticlePage implements OnInit {
@@ -41,7 +43,7 @@ export class ArticlePage implements OnInit {
     this.articleId = this.activatedRoute.snapshot.params['id'];
     if (!this.article || !this.article.id) {
       console.log(
-        "Article non trouvé en mémoire, on le télécharge depuis l'API...",
+        "Article non trouvé en mémoire, on le télécharge depuis l'API..."
       );
     }
   }

@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class BreathingServices {
   private url: string =
-    environment.url + environment.apiVersion + 'breathing_excercice/';
+    environment.url + environment.apiVersion + 'breathing_excercices/';
 
   constructor(private http: HttpClient) {}
   getAllExercices(): Observable<any> {

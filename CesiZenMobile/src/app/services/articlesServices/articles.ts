@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class articleServices {
-  private url: string = environment.url + environment.apiVersion + 'article';
+  private url: string = environment.url + environment.apiVersion + 'articles';
   private article: any = {};
 
   constructor(private http: HttpClient) {}

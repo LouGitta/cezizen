@@ -1,39 +1,56 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
+<ion-header class="ion-no-border zen-header">
+  <ion-toolbar class="zen-top-toolbar">
     <ion-buttons slot="start">
       <ion-button (click)="retourHub()" color="dark">
         <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-title class="zen-main-title">Respiration</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding ion-text-center">
-  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+<ion-content class="zen-content ion-padding ion-text-center" [fullscreen]="true">
+  <div class="breathing-wrapper">
     
-    <div 
-      class="breathing-circle"
-      [class.anim-inhale]="isPlaying && phase === 'inhale'"
-      [class.anim-hold]="isPlaying && phase === 'hold'"
-      [class.anim-exhale]="isPlaying && phase === 'exhale'"
-      [style.transition-duration]="getTransitionDuration()">
-      
-      <h2>{{ getPhaseText() }}</h2>
-      <h1 *ngIf="isPlaying">{{ counter }}</h1>
+    <div class="breathing-aura"
+         [class.anim-inhale]="isPlaying && phase === 'inhale'"
+         [class.anim-hold]="isPlaying && phase === 'hold'"
+         [class.anim-exhale]="isPlaying && phase === 'exhale'"
+         [style.transition-duration]="getTransitionDuration()">
     </div>
 
-    <p>{{ isPlaying ? "Concentre-toi sur ta respiration..." : "Appuie sur le bouton lecture pour lancer l'exercice" }}</p>
+    <div class="breathing-circle"
+         [class.anim-inhale]="isPlaying && phase === 'inhale'"
+         [class.anim-hold]="isPlaying && phase === 'hold'"
+         [class.anim-exhale]="isPlaying && phase === 'exhale'"
+         [style.transition-duration]="getTransitionDuration()">
+      
+      <div class="circle-content">
+        <h2 class="phase-text">{{ getPhaseText() }}</h2>
+        @if (isPlaying) {
+          <h1 class="counter-text">{{ counter }}</h1>
+        }
+      </div>
+      
+    </div>
+
+    <p class="guidance-text">
+      {{ isPlaying ? "Concentre-toi sur ton souffle..." : "Appuie sur lecture pour commencer" }}
+    </p>
 
   </div>
 </ion-content>
 
-<ion-footer class="ion-no-border" style="background: transparent;">
-  <div class="control-block">
-    <ion-button class="play-button" (click)="togglePlay()">
-      <ion-icon [name]="isPlaying ? 'pause' : 'play'"></ion-icon>
+<ion-footer class="ion-no-border zen-footer">
+  <div class="control-pill">
+    
+    <ion-button fill="clear" class="play-button" (click)="togglePlay()">
+      <ion-icon slot="icon-only" [name]="isPlaying ? 'pause' : 'play'" color="light"></ion-icon>
     </ion-button>
 
-    <ion-select [value]="currentExercice" (ionChange)="changerExercice($event)" interface="popover" style="flex: 1; margin-left: 15px;">
+    <div class="divider"></div>
+
+    <ion-select [value]="currentExercice" (ionChange)="changerExercice($event)" interface="popover" class="exo-select">
       @for (exo of exercices; track exo) {
         <ion-select-option [value]="exo">{{ exo.name }}</ion-select-option>
       }

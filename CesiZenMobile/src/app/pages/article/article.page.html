@@ -1,33 +1,45 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
+<ion-header class="ion-no-border zen-header">
+  <ion-toolbar class="zen-top-toolbar" color="transparent">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home" text=""></ion-back-button>
+      <ion-back-button defaultHref="/tabs/home" text="" color="dark"></ion-back-button>
     </ion-buttons>
-  </ion-toolbar>
+    </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="true" class="zen-article-content">
+  
   @if (article && article.id) {
-    <article class="article-container">
+    
+    <div class="article-hero">
+      @if (article.image) {
+        <img [src]="article.image" [alt]="article.title"/>
+      } @else {
+        <img src="https://ionicframework.com/docs/img/demos/card-media.png" alt="Image par défaut"/>
+      }
+    </div>
+
+    <article class="article-body">
       
       <header class="article-header">
+        <span class="article-badge">Lecture Zen</span> 
         <h1 class="article-title">{{ article.title }}</h1>
-        
-        <p class="article-date">{{ article.published | date:'dd MMMM yyyy' }}</p>
+        <p class="article-date">Publié le {{ article.published | date:'dd MMMM yyyy' }}</p>
       </header>
+      
+      <div class="article-text">
 
-      <div class="image-container">
-        <img src="https://ionicframework.com/docs/img/demos/card-media.png" [alt]="article.title" />
-      </div>
-      <div class="article-content">
-        <p style="white-space: pre-wrap;">{{ article.content }}</p>
+        *Emphasized* text.
+
+        <p>{{ article.content }}</p>
       </div>
 
     </article>
+
   } 
   @else {
-    <div class="ion-text-center" style="margin-top: 50px;">
-      <p>Chargement de l'article...</p>
+    <div class="ion-text-center loading-container">
+      <ion-spinner name="crescent" color="success"></ion-spinner>
+      <p>Préparation de votre lecture...</p>
     </div>
   }
 

@@ -1,37 +1,169 @@
-.breathing-circle {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  border: 2px solid black;
+/* --- FOND ET LAYOUT --- */
+.zen-header {
+  background: #F5F7F5;
+}
+.zen-top-toolbar {
+  --background: transparent;
+  --border-width: 0;
+}
+.zen-main-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2C3E2E;
+}
+.zen-content {
+  --background: #F5F7F5;
+}
+
+.breathing-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 30px;
+  height: 90%;
+  position: relative;
+}
+
+/* --- ANIMATIONS DES CERCLES --- */
+/* Variables pour gérer la taille de base */
+$circle-size: 160px;
+
+/* 1. L'aura (Lueur extérieure) */
+.breathing-aura {
+  position: absolute;
+  width: $circle-size;
+  margin-bottom: 25px;
+  height: $circle-size;
+  border-radius: 50%;
+  background: rgba(42, 157, 143, 0.15); /* Vert d'eau transparent */
   
   transition-property: transform;
-  transition-timing-function: linear;
+  transition-timing-function: ease-in-out; /* Mouvement naturel, ralenti aux extrémités */
+  transform: scale(1);
+  z-index: 1;
+}
+
+/* 2. Le cercle principal (Solide) */
+.breathing-circle {
+  position: relative;
+  width: $circle-size;
+  height: $circle-size;
+  border-radius: 50%;
+  
+  /* Un joli dégradé apaisant */
+  background: linear-gradient(135deg, #2A9D8F 0%, #21867a 100%);
+  box-shadow: 0 10px 30px rgba(42, 157, 143, 0.3);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 50px;
+  
+  transition-property: transform;
+  transition-timing-function: ease-in-out;
+  transform: scale(1);
+  z-index: 2;
+}
+
+/* --- LES ETATS D'ANIMATION --- */
+/* A l'inspiration, on grossit (1.6x pour le cercle, 1.8x pour l'aura) */
+.breathing-circle.anim-inhale, 
+.breathing-circle.anim-hold {
+  transform: scale(1.6);
+}
+.breathing-aura.anim-inhale, 
+.breathing-aura.anim-hold {
+  transform: scale(1.9); /* L'aura dépasse du cercle */
+}
+
+/* A l'expiration, on revient à la normale */
+.breathing-circle.anim-exhale,
+.breathing-aura.anim-exhale {
   transform: scale(1);
 }
 
-.anim-inhale, .anim-hold {
-  transform: scale(1.5);
+/* --- TEXTES DANS LE CERCLE --- */
+.circle-content {
+  color: #ffffff;
+  /* On inverse le scale du texte pour qu'il ne devienne pas géant quand le cercle grossit ! */
+  transition: transform 0.1s; 
+  
+  .phase-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  
+  .counter-text {
+    font-size: 3rem;
+    font-weight: 300;
+    margin: 5px 0 0 0;
+  }
 }
 
-.anim-exhale {
-  transform: scale(1);
+/* Garde le texte à taille normale même si le parent grossit (1 / 1.6 = 0.625) */
+.breathing-circle.anim-inhale .circle-content,
+.breathing-circle.anim-hold .circle-content {
+  transform: scale(0.7);
 }
 
-.control-block {
+
+/* Texte d'accompagnement sous le cercle */
+.guidance-text {
+  font-size: 1.1rem;
+  color: #88998C;
+  font-weight: 500;
+  margin-top: 20px;
+  transition: opacity 0.3s;
+}
+
+/* --- BARRE DE CONTRÔLES (FOOTER) --- */
+.zen-footer {
+  background: transparent;
+  padding-bottom: 20px;
+}
+
+.control-pill {
   display: flex;
   flex-direction: row;
   align-items: center;
-  background: #ffffff;
-  color: #32a560;
-  padding: 10px 15px;
-  border-radius: 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.10);
-  margin: 0 auto 1rem auto; 
-  width: 90%;
-  max-width: 200px
+  background: #2C3E2E; /* Vert très foncé élégant */
+  padding: 5px 15px;
+  border-radius: 40px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  margin: 0 auto; 
+  width: 250px;
+  max-width: 90%;
+}
+
+.play-button {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  margin: 0;
+  
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}
+
+.divider {
+  width: 1px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 10px;
+}
+
+.exo-select {
+  flex: 1;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.95rem;
+  
+  /* Enlève la ligne de base du select par défaut d'Ionic */
+  &::part(icon) {
+    color: rgba(255, 255, 255, 0.6);
+  }
 }
