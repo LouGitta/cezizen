@@ -27,10 +27,10 @@ from api import views
 router = routers.DefaultRouter()
 router.register(r"users", views.UserViewSet)
 router.register(r"groups", views.GroupViewSet)
-router.register(r"article", views.ArticleViewSet)
-router.register(r"breathing_excercice", views.BreathingExerciceViewSet)
+router.register(r"articles", views.ArticleViewSet)
+router.register(r"breathing_excercices", views.BreathingExerciceViewSet)
 router.register(r"category", views.CategoryViewSet)
-router.register(r"favorite", views.FavoriteViewSet)
+router.register(r"favorites", views.FavoriteViewSet)
 
 urlpatterns = [
     path("api/v1/", include(router.urls)),

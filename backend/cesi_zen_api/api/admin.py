@@ -4,7 +4,7 @@ from .models import BreathingExercice, Category, Article, Favorite
 
 @admin.register(BreathingExercice)
 class BreathingExerciceAdmin(admin.ModelAdmin):
-    list_display = ("name", "inhale", "hold", "exhale", "loop", "is_active")
+    list_display = ("name", "inhale", "hold", "exhale", "is_active")
     list_filter = ("is_active",)
     search_fields = ("name",)
     list_editable = ("is_active",)

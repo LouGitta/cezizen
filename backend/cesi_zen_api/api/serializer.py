@@ -45,7 +45,15 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ["id", "title", "content", "published", "category", "is_favorite"]
+        fields = [
+            "id",
+            "title",
+            "content",
+            "image",
+            "published",
+            "category",
+            "is_favorite",
+        ]
 
     def get_is_favorite(self, obj):
         request = self.context.get("request")
