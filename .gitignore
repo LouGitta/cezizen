@@ -1,5 +1,5 @@
 # Backend
-venv/
+.venv/
 *.pyc
 # Frontend
 node_modules/

@@ -27,7 +27,7 @@ class Category(models.Model):
 class Article(models.Model):
     id = models.AutoField(primary_key=True)
     image = models.URLField(blank=True, null=True)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=100)
     content = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

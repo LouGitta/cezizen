@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group, User
-from rest_framework import permissions, viewsets, generics
+from rest_framework import permissions, viewsets, generics, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -25,6 +25,22 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=["delete"], url_path="me")
+    def delete_me(self, request):
+        user = request.user
+
+        if user and user.is_authenticated:
+            user.delete()
+            return Response(
+                {"message": "Votre compte a été supprimé avec succès."},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
+        return Response(
+            {"error": "Impossible de supprimer ce compte."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class RegisterView(generics.CreateAPIView):
@@ -54,7 +70,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
     # def get_permissions(self):
     #     if self.action in ["list", "retrieve"]:
-    #         permission_classes = [permissions.AllowAny]
+    #           permission_classes = [permissions.AllowAny]
     #     else:
     #         permission_classes = [permissions.IsAdminUser]
     #     return permission_classes
