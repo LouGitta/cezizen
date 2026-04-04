@@ -17,6 +17,7 @@ import {
   IonList,
   IonCard,
   IonButtons,
+  IonCheckbox,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -29,6 +30,7 @@ import {
   statsChart,
   notifications,
   logOutOutline,
+  alertCircleOutline,
 } from 'ionicons/icons';
 import { AuthServices } from 'src/app/services/authServices/auth-services';
 
@@ -55,16 +57,19 @@ import { AuthServices } from 'src/app/services/authServices/auth-services';
     IonCard,
     IonButtons,
     RouterModule,
+    IonCheckbox,
   ],
 })
 export class UserPage {
-  username: string = 'test@cesizen.fr';
-  email: string = '';
-  password: string = 'MonSuperMotDePasse123!';
+  username: string = 'lou';
+  // email: string = '';
+  password: string = 'abcd';
   passwordConfirm: string = '';
   showPassword: boolean = false;
   isLoggedIn: boolean = false;
   authMode: 'login' | 'register' = 'login';
+  errorMessage: string = '';
+  rgpdAccepted: boolean = false;
 
   constructor(private authSrv: AuthServices, private router: Router) {
     addIcons({
@@ -77,31 +82,59 @@ export class UserPage {
       statsChart,
       notifications,
       logOutOutline,
+      alertCircleOutline,
     });
   }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    this.isLoggedIn = await this.authSrv.isAuthenticated();
+  }
 
   async ionViewWillEnter() {
+    console.log(await this.authSrv.isAuthenticated());
     this.isLoggedIn = await this.authSrv.isAuthenticated();
   }
 
   seConnecter() {
+    this.errorMessage = '';
+    if (!this.username || !this.password) {
+      this.errorMessage = 'Veuillez remplir tous les champs.';
+      return;
+    }
     const user = { username: this.username, password: this.password };
     this.authSrv.login(user).subscribe({
       next: (response) => {
         console.log('Connexion réussie !', response);
         this.password = '';
-        this.username = '';
+        this.passwordConfirm = '';
         this.isLoggedIn = true;
       },
-      error: (err) => console.error('Erreur :', err),
+      error: (err) => {
+        console.error('Erreur :', err);
+        if (err.status === 401) {
+          this.errorMessage = 'Identifiants incorrects. Veuillez réessayer.';
+        } else {
+          this.errorMessage = 'Impossible de joindre le serveur.';
+        }
+      },
     });
   }
 
   sInscrire() {
+    this.errorMessage = '';
+    if (!this.rgpdAccepted) {
+      this.errorMessage =
+        'Vous devez accepter les conditions RGPD pour créer un compte.';
+      return; // On stoppe la fonction ici, on n'envoie rien à l'API
+    }
+
+    if (!this.username || !this.password || !this.passwordConfirm) {
+      this.errorMessage = 'Veuillez remplir tous les champs.';
+      return;
+    }
+
     if (this.password !== this.passwordConfirm) {
-      console.error('Les mots de passe ne correspondent pas !');
+      this.errorMessage = 'Les mots de passe ne correspondent pas !';
       return;
     }
 
@@ -112,7 +145,16 @@ export class UserPage {
         console.log('Compte créé avec succès !', res);
         this.seConnecter();
       },
-      error: (err) => console.error("Erreur d'inscription :", err),
+      error: (err) => {
+        console.error("Erreur d'inscription :", err);
+        if (err.status === 400 && err.error) {
+          this.errorMessage =
+            "Ce nom d'utilisateur est déjà utilisé ou invalide.";
+        } else {
+          this.errorMessage =
+            'Une erreur est survenue lors de la création du compte.';
+        }
+      },
     });
   }
 

@@ -54,38 +54,26 @@ export class BreathingPage implements OnInit {
     addIcons({ play, pause, arrowBack });
   }
 
-  // 👇 LA MAGIE OPÈRE ICI 👇
   async ngOnInit() {
-    // 1. OFFLINE : On charge depuis le cache local en priorité
     const exercicesSauvegardes = await this.storageSrv.get('offline_breathing');
 
     if (exercicesSauvegardes && exercicesSauvegardes.length > 0) {
       this.exercices = exercicesSauvegardes;
       this.currentExercice = this.exercices[0];
-      console.log('📦 Exercices chargés instantanément depuis le cache !');
     }
 
-    // 2. ONLINE : On essaie de récupérer les nouveautés sur le serveur en arrière-plan
     this.exerciceSrv.getAllExercices().subscribe({
       next: async (data: any) => {
         this.exercices = data;
 
-        // Si on n'avait rien en cache, on initialise l'exercice sélectionné
         if (!this.currentExercice || !exercicesSauvegardes) {
           this.currentExercice = this.exercices[0];
         }
 
-        // On sauvegarde silencieusement ces données fraîches pour la prochaine fois
         await this.storageSrv.set('offline_breathing', data);
-        console.log('✅ Synchronisation serveur réussie ! Cache mis à jour.');
       },
       error: (err) => {
-        // En cas d'erreur (pas de wifi, serveur éteint), on avertit juste dans la console.
-        // L'utilisateur ne verra pas d'erreur, il utilisera les données de l'étape 1 !
-        console.warn(
-          '📡 Serveur injoignable. Le mode hors-ligne prend le relais.',
-          err
-        );
+        console.warn(err);
       },
     });
   }
@@ -184,5 +172,8 @@ export class BreathingPage implements OnInit {
   ionViewWillLeave() {
     const tabBar = document.querySelector('ion-tab-bar');
     if (tabBar) tabBar.style.display = 'flex';
+  }
+  comparerExercices(e1: any, e2: any): boolean {
+    return e1 && e2 ? e1.id === e2.id : e1 === e2;
   }
 }

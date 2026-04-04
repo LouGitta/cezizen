@@ -1,27 +1,4 @@
-/* --- GLOBAL LAYOUT --- */
-.zen-header {
-  background: #F5F7F5;
-  padding-top: 10px;
-}
-.zen-top-toolbar {
-  --background: transparent;
-  --border-width: 0;
-  --min-height: 50px;
-}
-.zen-main-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #2C3E2E;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
-.zen-content {
-  --background: #F5F7F5;
-}
-
-/* =========================================
-   1. AUTHENTICATION FORM (LOGIN/REGISTER)
-   ========================================= */
+// Formulaire (LOGIN/REGISTER)
 .auth-container {
   max-width: 400px;
   margin: 0 auto;

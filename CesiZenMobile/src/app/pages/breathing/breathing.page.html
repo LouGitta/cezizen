@@ -2,7 +2,7 @@
   <ion-toolbar class="zen-top-toolbar">
     <ion-buttons slot="start">
       <ion-button (click)="retourHub()" color="dark">
-        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+        <ion-icon slot="icon-only" name="arrow-back" style="color: #2C3E2E;"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title class="zen-main-title">Respiration</ion-title>
@@ -50,7 +50,7 @@
 
     <div class="divider"></div>
 
-    <ion-select [value]="currentExercice" (ionChange)="changerExercice($event)" interface="popover" class="exo-select">
+    <ion-select [compareWith]="comparerExercices" [value]="currentExercice" (ionChange)="changerExercice($event)" interface="popover" class="exo-select">
       @for (exo of exercices; track exo) {
         <ion-select-option [value]="exo">{{ exo.name }}</ion-select-option>
       }

@@ -8,7 +8,8 @@ import { StorageService } from '../storage/storage';
   providedIn: 'root',
 })
 export class AuthServices {
-  private url: string = environment.url + environment.authUrl;
+  private authUrl: string = environment.url + environment.authUrl;
+  private apiUrl: string = environment.url + environment.apiVersion;
 
   constructor(private http: HttpClient, private storageSrv: StorageService) {}
 
@@ -22,8 +23,12 @@ export class AuthServices {
     return hasAccess || hasRefresh;
   }
 
+  deleteAccount(): Observable<any> {
+    return this.http.delete(this.apiUrl + 'users/me/');
+  }
+
   login(user: any): Observable<any> {
-    return this.http.post(this.url + 'login/', user).pipe(
+    return this.http.post(this.authUrl + 'login/', user).pipe(
       tap(async (response: any) => {
         if (response && response.access) {
           await this.storageSrv.set('access_token', response.access);
@@ -39,6 +44,6 @@ export class AuthServices {
   }
 
   register(user: any): Observable<any> {
-    return this.http.post(this.url + 'register/', user);
+    return this.http.post(this.authUrl + 'register/', user);
   }
 }

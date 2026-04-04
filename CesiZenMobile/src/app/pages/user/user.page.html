@@ -5,7 +5,7 @@
     @if (isLoggedIn) {
       <ion-buttons slot="end">
         <ion-button (click)="ouvrirParametres()" color="dark">
-          <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+          <ion-icon slot="icon-only" name="settings-outline" style="color: #2C3E2E;"></ion-icon>
         </ion-button>
       </ion-buttons>
     }
@@ -39,15 +39,29 @@
           <ion-item class="zen-input-item" lines="none">
             <ion-input type="password" [(ngModel)]="passwordConfirm" label="Confirmer le mot de passe" labelPlacement="floating"></ion-input>
           </ion-item>
+          <ion-item class="zen-rgpd-item" lines="none" style="margin-top: 15px; --background: transparent; --padding-start: 0;">
+            <ion-checkbox [(ngModel)]="rgpdAccepted" justify="start" labelPlacement="end" color="success">
+              <span style="font-size: 0.85rem; color: #2C3E2E; white-space: normal; line-height: 1.4;">
+                J'accepte que mes données soient traitées dans le cadre de l'application CESIZen (Conformité RGPD).
+              </span>
+            </ion-checkbox>
+          </ion-item>
         }
       </div>
+
+      @if (errorMessage) {
+        <div style="color: #E76F51; text-align: center; font-size: 0.9rem; margin-bottom: 15px; padding: 0 10px;">
+          <ion-icon name="alert-circle-outline" style="vertical-align: text-bottom; margin-right: 5px;"></ion-icon>
+          {{ errorMessage }}
+        </div>
+      }
 
       @if (authMode === 'login') {
         <ion-button expand="block" (click)="seConnecter()" class="zen-btn-primary" mode="ios">
           Se connecter
         </ion-button>
       } @else {
-        <ion-button expand="block" (click)="sInscrire()" class="zen-btn-primary" mode="ios">
+        <ion-button expand="block" (click)="sInscrire()" class="zen-btn-primary" mode="ios" [disabled]="!rgpdAccepted">
           Créer mon compte
         </ion-button>
       }
@@ -61,7 +75,7 @@
       <div class="profile-header">
         <div class="avatar-wrapper">
           <ion-avatar class="profile-avatar">
-            <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
+            <img src="https://api.dicebear.com/9.x/croodles/svg?seed={{username}}" alt="Avatar" />
           </ion-avatar>
         </div>
         <h2 class="profile-name">Bonjour, {{ username.split('@')[0] }} !</h2>

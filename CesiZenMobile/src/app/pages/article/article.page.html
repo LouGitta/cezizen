@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border zen-header">
   <ion-toolbar class="zen-top-toolbar" color="transparent">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home" text="" color="dark"></ion-back-button>
+      <ion-back-button defaultHref="/tabs/home" text="" style="color: #2C3E2E;"></ion-back-button>
     </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -22,7 +22,18 @@
       
       <header class="article-header">
         <span class="article-badge">Lecture Zen</span> 
-        <h1 class="article-title">{{ article.title }}</h1>
+        
+        <div class="title-row">
+          <h1 class="article-title">{{ article.title }}</h1>
+          
+          <ion-button fill="clear" (click)="toggleFavorite()" class="inline-favorite-btn">
+            <ion-icon
+              slot="icon-only"
+              [name]="article.is_favorite ? 'heart' : 'heart-outline'" 
+              [color]="article.is_favorite ? 'danger' : 'medium'">
+            </ion-icon>
+          </ion-button>
+        </div>
         <p class="article-date">Publié le {{ article.published | date:'dd MMMM yyyy' }}</p>
       </header>
       
