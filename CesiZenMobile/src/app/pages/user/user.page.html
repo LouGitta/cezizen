@@ -48,6 +48,11 @@
           </ion-item>
         }
       </div>
+      <div class="ion-text-center ion-margin-top">
+        <ion-button fill="clear" size="small" color="medium" (click)="showForgotPasswordAlert()">
+          Mot de passe oublié ?
+        </ion-button>
+      </div>
 
       @if (errorMessage) {
         <div style="color: #E76F51; text-align: center; font-size: 0.9rem; margin-bottom: 15px; padding: 0 10px;">

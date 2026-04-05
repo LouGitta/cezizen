@@ -33,6 +33,7 @@ import {
   alertCircleOutline,
 } from 'ionicons/icons';
 import { AuthServices } from 'src/app/services/authServices/auth-services';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-user',
@@ -71,7 +72,11 @@ export class UserPage {
   errorMessage: string = '';
   rgpdAccepted: boolean = false;
 
-  constructor(private authSrv: AuthServices, private router: Router) {
+  constructor(
+    private authSrv: AuthServices,
+    private router: Router,
+    private alertController: AlertController
+  ) {
     addIcons({
       eye,
       eyeOff,
@@ -165,5 +170,17 @@ export class UserPage {
 
   ouvrirParametres() {
     this.router.navigate(['/settings']);
+  }
+
+  async showForgotPasswordAlert() {
+    const alert = await this.alertController.create({
+      header: 'Réinitialisation',
+      message:
+        'Pour des raisons de sécurité, veuillez contacter votre administrateur à "support@cesizen.fr" pour réinitialiser votre mot de passe.',
+      buttons: ["J'ai compris"],
+      cssClass: 'custom-alert-class',
+    });
+
+    await alert.present();
   }
 }
