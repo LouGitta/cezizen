@@ -57,23 +57,39 @@ class BreathingExerciceViewSet(viewsets.ModelViewSet):
     queryset = BreathingExercice.objects.all()
     serializer_class = BreathingExerciceSerializer
 
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [permissions.AllowAny()]
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [permissions.AllowAny()]
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
 
-    # def get_permissions(self):
-    #     if self.action in ["list", "retrieve"]:
-    #           permission_classes = [permissions.AllowAny]
-    #     else:
-    #         permission_classes = [permissions.IsAdminUser]
-    #     return permission_classes
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [permissions.AllowAny()]
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [permissions.IsAdminUser()]
+        return super().get_permissions()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
     @action(
         detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated]

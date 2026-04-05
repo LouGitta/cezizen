@@ -1,5 +1,6 @@
 # Backend
 .venv/
 *.pyc
+__pycache__/
 # Frontend
 node_modules/
