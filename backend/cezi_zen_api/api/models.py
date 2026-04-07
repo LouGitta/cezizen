@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from ckeditor.fields import RichTextField
 
 
 class BreathingExercice(models.Model):
@@ -28,7 +29,7 @@ class Article(models.Model):
     id = models.AutoField(primary_key=True)
     image = models.URLField(blank=True, null=True)
     title = models.CharField(max_length=100)
-    content = models.TextField()
+    content = RichTextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     published = models.DateTimeField(default=timezone.now)

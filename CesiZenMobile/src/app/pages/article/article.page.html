@@ -37,12 +37,7 @@
         <p class="article-date">Publié le {{ article.published | date:'dd MMMM yyyy' }}</p>
       </header>
       
-      <div class="article-text">
-
-        *Emphasized* text.
-
-        <p>{{ article.content }}</p>
-      </div>
+      <div class="article-text" [innerHTML]="article.content"></div>
 
     </article>
 
