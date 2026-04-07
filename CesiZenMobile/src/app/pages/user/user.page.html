@@ -1,5 +1,8 @@
 <ion-header class="ion-no-border zen-header">
   <ion-toolbar class="zen-top-toolbar">
+    <ion-buttons>
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title class="zen-main-title">Mon Compte</ion-title>
     
     @if (isLoggedIn) {
@@ -106,7 +109,7 @@
       </div>
 
       <ion-list class="zen-menu-list" inset="true" mode="ios">
-        <ion-item button detail="true" lines="full" routerLink="/tabs/home" [queryParams]="{ filter: 'favoris' }">
+        <ion-item button detail="true" lines="full" routerLink="/home" [queryParams]="{ filter: 'favoris' }">
           <ion-icon slot="start" name="heart" style="color: #E76F51;"></ion-icon>
           <ion-label>Mes articles favoris</ion-label>
         </ion-item>

@@ -13,6 +13,11 @@ import {
   IonSegmentButton,
   IonLabel,
   IonImg,
+  IonButtons,
+  IonMenuButton,
+  IonGrid,
+  IonCol,
+  IonRow,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForwardOutline, heart, heartOutline } from 'ionicons/icons';
@@ -20,7 +25,7 @@ import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthServices } from 'src/app/services/authServices/auth-services';
-import { StorageService } from 'src/app/services/storage/storage'; // 👈 1. Import du Storage
+import { StorageService } from 'src/app/services/storage/storage';
 import { articleServices } from 'src/app/services/articlesServices/articles';
 
 @Component({
@@ -43,6 +48,11 @@ import { articleServices } from 'src/app/services/articlesServices/articles';
     IonLabel,
     FormsModule,
     IonImg,
+    IonButtons,
+    IonMenuButton,
+    IonGrid,
+    IonCol,
+    IonRow,
   ],
 })
 export class HomePage implements OnInit {
