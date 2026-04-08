@@ -1,5 +1,45 @@
 <ion-app>
-  <ion-router-outlet>
+  <ion-split-pane contentId="main-content" when="md">
     
-  </ion-router-outlet>
+    <ion-menu contentId="main-content" type="overlay">
+      <ion-header class="ion-no-border">
+        <ion-toolbar color="light">
+          <ion-title class="zen-main-title">CESIZen</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content>
+        <ion-list lines="none" class="zen-list">
+          <ion-menu-toggle auto-hide="false">
+            
+            <ion-item routerLink="/home" routerDirection="root" routerLinkActive="selected-menu">
+              <ion-icon slot="start" name="home-outline"></ion-icon>
+              <ion-label>Accueil</ion-label>
+            </ion-item>
+            
+            <ion-item routerLink="/breathing" routerDirection="root" routerLinkActive="selected-menu">
+              <ion-icon slot="start" name="pause-circle-outline"></ion-icon>
+              <ion-label>Respirer</ion-label>
+            </ion-item>
+            
+            <ion-item routerLink="/user" routerDirection="root" routerLinkActive="selected-menu">
+              <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+              <ion-label>Mon compte</ion-label>
+            </ion-item>
+
+            <div style="height: 1px; background: #eee; margin: 15px 20px;"></div>
+
+            <ion-item routerLink="/settings" routerDirection="root" routerLinkActive="selected-menu">
+              <ion-icon slot="start" name="settings-outline"></ion-icon>
+              <ion-label>Paramètres</ion-label>
+            </ion-item>
+
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+    
+  </ion-split-pane>
 </ion-app>

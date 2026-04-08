@@ -18,6 +18,7 @@ import {
   IonCard,
   IonButtons,
   IonCheckbox,
+  IonMenuButton,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -59,6 +60,7 @@ import { AlertController } from '@ionic/angular';
     IonButtons,
     RouterModule,
     IonCheckbox,
+    IonMenuButton,
   ],
 })
 export class UserPage {

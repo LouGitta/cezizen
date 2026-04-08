@@ -42,6 +42,53 @@ class UserViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    @action(
+        detail=False,
+        methods=["patch"],
+        url_path="update_me",
+        permission_classes=[permissions.IsAuthenticated],
+    )
+    def update_me(self, request):
+        user = request.user
+        data = request.data
+        has_changed = False
+
+        if "username" in data and data["username"] != "":
+            # Vérifier si le pseudo n'est pas déjà pris par quelqu'un d'autre
+            if (
+                User.objects.filter(username=data["username"])
+                .exclude(id=user.id)
+                .exists()
+            ):
+                return Response(
+                    {"error": "Ce nom d'utilisateur est déjà pris."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            user.username = data["username"]
+            has_changed = True
+
+        if "new_password" in data and data["new_password"] != "":
+            if "current_password" not in data or not user.check_password(
+                data["current_password"]
+            ):
+                return Response(
+                    {"error": "L'ancien mot de passe est incorrect."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            user.set_password(data["new_password"])
+            has_changed = True
+
+        if has_changed:
+            user.save()
+            return Response(
+                {"message": "Profil mis à jour avec succès."}, status=status.HTTP_200_OK
+            )
+
+        return Response(
+            {"message": "Aucune modification apportée."}, status=status.HTTP_200_OK
+        )
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()

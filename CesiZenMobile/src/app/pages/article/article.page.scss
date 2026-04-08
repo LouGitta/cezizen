@@ -21,7 +21,6 @@ ion-toolbar {
   }
 }
 
-/* --- CORPS DE L'ARTICLE --- */
 .article-body {
   position: relative;
   background: #ffffff;
@@ -34,7 +33,6 @@ ion-toolbar {
   min-height: 65vh;
 }
 
-/* --- EN-TÊTE DU TEXTE --- */
 .article-header {
   margin-bottom: 25px;
 
@@ -83,18 +81,52 @@ ion-toolbar {
   }
 }
 
-/* --- LE CONTENU (TYPOGRAPHIE) --- */
 .article-text {
-  p {
     font-size: 1.05rem;
-    line-height: 1.7; /* Très important pour le confort de lecture */
+    line-height: 1.7;
     color: #4A554D;
-    white-space: pre-wrap;
     margin-bottom: 20px;
+
+    ul {
+    list-style-type: disc;
+    padding-left: 25px;
+    margin-bottom: 20px;
+    color: #5F6F62;
+    
+    ul {
+      list-style-type: circle;
+      margin-top: 5px;
+    }
+  }
+
+  ol {
+    list-style-type: decimal;
+    padding-left: 25px;
+    margin-bottom: 20px;
+    color: #5F6F62;
+  }
+
+  li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  li > p {
+    margin: 0;
+    display: inline;
+  }
+
+  cite, q {
+    display: block;
+    font-style: italic;
+    color: #2A9D8F;
+    border-left: 3px solid #2A9D8F;
+    padding-left: 15px;
+    margin: 15px 0;
+    font-size: 1.05rem;
   }
 }
 
-/* --- CHARGEMENT --- */
 .loading-container {
   margin-top: 40vh;
   color: #5F6F62;

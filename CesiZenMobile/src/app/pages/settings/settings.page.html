@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border zen-header">
   <ion-toolbar class="zen-top-toolbar">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/user" text="Retour" color="dark"></ion-back-button>
+    <ion-buttons>
+      <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title class="zen-main-title">Paramètres</ion-title>
   </ion-toolbar>
@@ -10,6 +10,52 @@
 <ion-content class="zen-content ion-padding">
   
   <h2 style="color: #2C3E2E; font-size: 1.2rem; margin-top: 10px; margin-bottom: 15px; padding-left: 5px;">
+    Sécurité & Compte
+  </h2>
+
+  <ion-accordion-group mode="ios" class="zen-accordion">
+    
+    <ion-accordion value="security">
+      <ion-item slot="header" color="light">
+        <ion-icon slot="start" name="lock-closed-outline" style="color: #2A9D8F;"></ion-icon>
+        <ion-label style="font-weight: 500;">Modifier mon profil</ion-label>
+      </ion-item>
+      
+      <div class="ion-padding" slot="content" style="background: #ffffff;">
+        <ion-list class="zen-list" lines="full">
+          <ion-item>
+            <ion-label position="floating" style="color: #5F6F62;">Nouveau nom d'utilisateur</ion-label>
+            <ion-input type="text" [(ngModel)]="username"></ion-input>
+          </ion-item>
+
+          <div style="margin-top: 15px; margin-bottom: 5px;">
+            <p style="font-size: 0.85rem; color: #E76F51; margin: 0;">* Laissez vide si vous ne changez pas le mot de passe</p>
+          </div>
+
+          <ion-item>
+            <ion-label position="floating" style="color: #5F6F62;">Mot de passe actuel</ion-label>
+            <ion-input type="password" [(ngModel)]="currentPassword"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating" style="color: #5F6F62;">Nouveau mot de passe</ion-label>
+            <ion-input type="password" [(ngModel)]="newPassword"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating" style="color: #5F6F62;">Confirmer le nouveau</ion-label>
+            <ion-input type="password" [(ngModel)]="confirmPassword"></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <ion-button expand="block" class="zen-btn-primary" mode="ios" style="margin-top: 20px;" (click)="saveProfile()">
+          Enregistrer les modifications
+        </ion-button>
+      </div>
+    </ion-accordion>
+    </ion-accordion-group>
+
+  <h2 style="color: #2C3E2E; font-size: 1.2rem; margin-top: 30px; margin-bottom: 15px; padding-left: 5px;">
     Informations légales
   </h2>
 
@@ -55,6 +101,7 @@
     </ion-accordion>
 
   </ion-accordion-group>
+
   <div style="margin-top: 40px; margin-bottom: 20px; text-align: center;">
     <ion-button color="danger" fill="outline" (click)="confirmerSuppression()">
       <ion-icon slot="start" name="trash-outline"></ion-icon>

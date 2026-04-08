@@ -18,10 +18,31 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ("title", "category", "author", "published")
-    list_filter = ("category", "published", "author")
-    search_fields = ("title", "content")
-    date_hierarchy = "published"
+    list_display = ("title", "category", "published")
+    list_filter = ("category",)
+    search_fields = ("title",)
+
+    fieldsets = (
+        (
+            "Informations Générales",
+            {
+                "fields": ("title", "category", "image"),
+                "description": "Les informations principales qui apparaîtront sur la carte de l'article.",
+            },
+        ),
+        (
+            "Rédaction",
+            {
+                "fields": ("content",),
+                "classes": ("wide",),  # Utilise toute la largeur de l'écran
+            },
+        ),
+    )
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.author = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Favorite)

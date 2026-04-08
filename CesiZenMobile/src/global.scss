@@ -36,6 +36,10 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
 
+ion-menu-button {
+  color: #2C3E2E;
+}
+
 /* --- GLOBAL LAYOUT --- */
 .zen-header {
   background: #F5F7F5;

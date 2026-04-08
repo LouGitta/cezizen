@@ -27,6 +27,10 @@ export class AuthServices {
     return this.http.delete(this.apiUrl + 'users/me/');
   }
 
+  updateProfile(data: any) {
+    return this.http.patch(this.apiUrl + 'users/update_me/', data);
+  }
+
   login(user: any): Observable<any> {
     return this.http.post(this.authUrl + 'login/', user).pipe(
       tap(async (response: any) => {

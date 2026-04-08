@@ -10,6 +10,7 @@ import {
   IonIcon,
   IonButtons,
   IonTitle,
+  IonMenuButton,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { BreathingServices } from '../../services/breathingServices/breathing-services';
@@ -36,6 +37,7 @@ import { StorageService } from 'src/app/services/storage/storage';
     IonIcon,
     IonButtons,
     IonTitle,
+    IonMenuButton,
   ],
 })
 export class BreathingPage implements OnInit {
@@ -161,7 +163,7 @@ export class BreathingPage implements OnInit {
     this.isPlaying = false;
     this.phase = 'inhale';
 
-    this.router.navigate(['/tabs/home']);
+    this.router.navigate(['/home']);
   }
 
   ionViewWillEnter() {
