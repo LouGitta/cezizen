@@ -19,3 +19,7 @@ jobs:
         run: |
           cd backend/cesi_zen_api
           docker build -t cesizen-backend:test .
+
+      - name: Lancer les tests unitaires Django
+        run: |
+          docker run --rm cesizen-backend:test python manage.py test
