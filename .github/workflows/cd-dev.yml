@@ -1,0 +1,18 @@
+name: "[CD] DEV"
+
+on:
+  push:
+    branches: ["develop"]
+
+jobs:
+  simulate-deploy-dev:
+    name: Simulation Déploiement DEV
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Afficher un message de test
+        run: |
+          echo "======================================================"
+          echo "✅ Le déclencheur DEV fonctionne parfaitement !"
+          echo "🔜 Prochaine étape : configurer le vrai déploiement."
+          echo "======================================================"

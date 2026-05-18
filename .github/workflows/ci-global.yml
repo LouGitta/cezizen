@@ -1,0 +1,32 @@
+name: "[CI] Pipeline CESIZen"
+
+on:
+  push:
+    branches: ["feature/deployment"]
+
+jobs:
+  build-backend:
+    name: Build Backend (Django)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Construire l'image Docker de Production
+        run: |
+          cd backend/cesi_zen_api
+          docker build -t cesizen-backend:test .
+
+  build-frontend:
+    name: Build Frontend (Ionic)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Construire l'image Docker de Production (Multi-stage)
+        run: |
+          cd CesiZenMobile
+          docker build -t cesizen-frontend:test .
