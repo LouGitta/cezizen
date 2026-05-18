@@ -1,4 +1,4 @@
-name: Pipeline CESIZen (CI)
+name: "[CI] Pipeline CESIZen"
 
 on:
   push:
