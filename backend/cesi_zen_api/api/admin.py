@@ -18,7 +18,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ("title", "category", "published")
+    list_display = ("title", "category", "published", "author")
     list_filter = ("category",)
     search_fields = ("title",)
 
@@ -26,7 +26,7 @@ class ArticleAdmin(admin.ModelAdmin):
         (
             "Informations Générales",
             {
-                "fields": ("title", "category", "image"),
+                "fields": ("title", "category", "image", "author"),
                 "description": "Les informations principales qui apparaîtront sur la carte de l'article.",
             },
         ),
