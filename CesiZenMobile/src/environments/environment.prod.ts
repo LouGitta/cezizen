@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  url: 'http://192.168.0.16:8000/api/',
+  url: 'http://10.146.51.229:8000/api/',
   authUrl: 'auth/',
   apiVersion: 'v1/',
 };

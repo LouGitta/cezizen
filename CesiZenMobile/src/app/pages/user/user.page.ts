@@ -64,9 +64,8 @@ import { AlertController } from '@ionic/angular';
   ],
 })
 export class UserPage {
-  username: string = 'lou';
-  // email: string = '';
-  password: string = 'abcd';
+  username: string = '';
+  password: string = '';
   passwordConfirm: string = '';
   showPassword: boolean = false;
   isLoggedIn: boolean = false;
@@ -132,7 +131,7 @@ export class UserPage {
     if (!this.rgpdAccepted) {
       this.errorMessage =
         'Vous devez accepter les conditions RGPD pour créer un compte.';
-      return; // On stoppe la fonction ici, on n'envoie rien à l'API
+      return;
     }
 
     if (!this.username || !this.password || !this.passwordConfirm) {

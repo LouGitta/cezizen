@@ -41,13 +41,14 @@
         <ion-col size="12" size-md="6" size-lg="4" style="display: flex;">
           
           <ion-card class="zen-card" mode="ios" button="true" (click)="goToArticle(article.id, article)" style="width: 100%; position: relative; height: 100%; margin: 0; display: flex; flex-direction: column;">
-            
+            @if (isLoggedIn) {
             <div class="zen-favorite-btn" (click)="toggleFavorite($event, article)">
               <ion-icon 
                 [name]="article.is_favorite ? 'heart' : 'heart-outline'" 
                 [color]="article.is_favorite ? 'danger' : 'medium'">
               </ion-icon>
             </div>
+          }
             
             <div class="zen-card-image-wrapper">
               @if (article.image) {
