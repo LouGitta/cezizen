@@ -1,0 +1,5 @@
+name: Deployment development
+
+on:
+  push:
+    branches: ["develop"]

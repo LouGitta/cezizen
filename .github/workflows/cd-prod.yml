@@ -1,0 +1,5 @@
+name: Deployment production
+
+on:
+  push:
+    branches: ["main"]

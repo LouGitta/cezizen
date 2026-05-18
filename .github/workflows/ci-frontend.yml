@@ -1,0 +1,22 @@
+name: [CI] Frontend
+
+on:
+  push:
+    branches: ["main", "develop", "feature/front*"]
+
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  build-frontend:
+    name: Build Frontend (Ionic)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Construire l'image Docker de Production (Multi-stage)
+        run: |
+          cd frontend
+          docker build -t cesizen-frontend:test .

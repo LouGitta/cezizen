@@ -1,0 +1,21 @@
+name: [CI] Backend
+
+on:
+  push:
+    branches: ["main", "develop", "feature/back*"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  build-backend:
+    name: Build Backend (Django)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+
+      - name: Construire l'image Docker de Production
+        run: |
+          cd backend/cesi_zen_api
+          docker build -t cesizen-backend:test .
