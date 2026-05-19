@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -55,18 +55,18 @@ import { AuthServices } from 'src/app/services/authServices/auth-services';
     IonMenuButton,
   ],
 })
-export class SettingsPage implements OnInit {
+export class SettingsPage {
+  private alertCtrl = inject(AlertController);
+  private toastCtrl = inject(ToastController);
+  private authSrv = inject(AuthServices);
+  private router = inject(Router);
+
   username: string = '';
   currentPassword: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
 
-  constructor(
-    private alertCtrl: AlertController,
-    private toastCtrl: ToastController,
-    private authSrv: AuthServices,
-    private router: Router
-  ) {
+  constructor() {
     addIcons({
       documentTextOutline,
       shieldCheckmarkOutline,
@@ -75,8 +75,6 @@ export class SettingsPage implements OnInit {
       lockClosedOutline,
     });
   }
-
-  ngOnInit() {}
 
   async saveProfile() {
     const payload: any = {};

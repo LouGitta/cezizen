@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -56,17 +56,17 @@ import { articleServices } from 'src/app/services/articlesServices/articles';
   ],
 })
 export class HomePage implements OnInit {
+  private articlesSrv = inject(articleServices);
+  private authSrv = inject(AuthServices);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private storageSrv = inject(StorageService);
+
   articles: any = [];
   selectedCategory: any = 0;
   isLoggedIn: boolean = false;
 
-  constructor(
-    private articlesSrv: articleServices,
-    private authSrv: AuthServices,
-    private router: Router,
-    private route: ActivatedRoute,
-    private storageSrv: StorageService
-  ) {
+  constructor() {
     addIcons({ arrowForwardOutline, heart, heartOutline });
   }
 

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { StorageService } from '../storage/storage';
@@ -8,10 +8,11 @@ import { StorageService } from '../storage/storage';
   providedIn: 'root',
 })
 export class AuthServices {
+  private http = inject(HttpClient);
+  private storageSrv = inject(StorageService);
+
   private authUrl: string = environment.url + environment.authUrl;
   private apiUrl: string = environment.url + environment.apiVersion;
-
-  constructor(private http: HttpClient, private storageSrv: StorageService) {}
 
   async isAuthenticated(): Promise<boolean> {
     const accessToken = await this.storageSrv.get('access_token');
