@@ -9,7 +9,8 @@ COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-install-project
 
-FROM python:3.11-slim
+
+FROM python:3.13-slim
 
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
