@@ -1,12 +1,12 @@
 services:
   backend:
-    image: ghcr.io/LouGitta/cezizen/backend:develop
+    image: ghcr.io/lougitta/cezizen/backend:develop
     ports:
       - "8000:8000"
     restart: unless-stopped
 
   frontend:
-    image: ghcr.io/LouGitta/cezizen/frontend:develop
+    image: ghcr.io/lougitta/cezizen/frontend:develop
     ports:
       - "80:80"
     restart: unless-stopped
