@@ -1,5 +1,5 @@
 import { Router, RouterModule } from '@angular/router';
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
@@ -63,7 +63,11 @@ import { AlertController } from '@ionic/angular';
     IonMenuButton,
   ],
 })
-export class UserPage {
+export class UserPage implements OnInit {
+  private authSrv = inject(AuthServices);
+  private router = inject(Router);
+  private alertController = inject(AlertController);
+
   username: string = '';
   password: string = '';
   passwordConfirm: string = '';
@@ -73,11 +77,7 @@ export class UserPage {
   errorMessage: string = '';
   rgpdAccepted: boolean = false;
 
-  constructor(
-    private authSrv: AuthServices,
-    private router: Router,
-    private alertController: AlertController
-  ) {
+  constructor() {
     addIcons({
       eye,
       eyeOff,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -40,7 +40,11 @@ import { StorageService } from 'src/app/services/storage/storage';
     IonMenuButton,
   ],
 })
-export class BreathingPage implements OnInit {
+export class BreathingPage implements OnInit, OnDestroy {
+  private exerciceSrv = inject(BreathingServices);
+  private router = inject(Router);
+  private storageSrv = inject(StorageService);
+
   exercices: any[] = [];
   currentExercice: any = null;
   isPlaying: boolean = false;
@@ -48,11 +52,7 @@ export class BreathingPage implements OnInit {
   counter: number = 0;
   private timer: any;
 
-  constructor(
-    private exerciceSrv: BreathingServices,
-    private router: Router,
-    private storageSrv: StorageService
-  ) {
+  constructor() {
     addIcons({ play, pause, arrowBack });
   }
 

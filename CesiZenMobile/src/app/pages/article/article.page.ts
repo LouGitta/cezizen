@@ -36,17 +36,17 @@ import { heart, heartOutline } from 'ionicons/icons';
   ],
 })
 export class ArticlePage implements OnInit {
+  private articlesSrv = inject(articleServices);
+  private storageSrv = inject(StorageService);
   router: Router = inject(Router);
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+
   articleId: Number = 0;
   article: any = {};
 
-  constructor(
-    private articlesSrv: articleServices,
-    private storageSrv: StorageService
-  ) {
+  constructor() {
     addIcons({ heart, heartOutline });
-    this.article = articlesSrv.getArticle();
+    this.article = this.articlesSrv.getArticle();
   }
 
   ngOnInit() {

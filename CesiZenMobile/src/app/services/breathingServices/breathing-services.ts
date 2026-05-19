@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -7,10 +7,11 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class BreathingServices {
+  private http = inject(HttpClient);
+
   private url: string =
     environment.url + environment.apiVersion + 'breathing_excercices/';
 
-  constructor(private http: HttpClient) {}
   getAllExercices(): Observable<any> {
     return this.http.get(this.url);
   }
