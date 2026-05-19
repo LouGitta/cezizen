@@ -18,8 +18,8 @@ jobs:
       - name: Construire l'image Docker de Production
         run: |
           cd backend/cesi_zen_api
-          docker build -t cesizen-backend:test .
+          docker build -f Dockerfile.dev -t cesizen-backend:test .
 
       - name: Lancer les tests unitaires Django
         run: |
-          docker run --rm cesizen-backend:test python manage.py test
+          docker run --rm cesizen-backend:test uv run python manage.py test
