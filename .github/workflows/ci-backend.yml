@@ -2,24 +2,58 @@ name: "[CI] Backend"
 
 on:
   push:
-    branches: ["main", "develop", "feature/back*"]
+    branches: ["main", "develop", "feature/*"]
+  paths:
+    - "backend/**"
+    - ".github/workflows/ci-backend.yml"
   pull_request:
     branches: ["main", "develop"]
 
 jobs:
-  build-backend:
-    name: Build Backend (Django)
+  lint:
+    name: Linter (Ruff)
     runs-on: ubuntu-latest
-
     steps:
-      - name: Récupérer le code source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Lancer Ruff
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "check backend/cesi_zen_api"
 
-      - name: Construire l'image Docker de Production
+  test:
+    name: Tests Unitaires
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construire l'image de Dev
         run: |
           cd backend/cesi_zen_api
           docker build -f Dockerfile.dev -t cesizen-backend:test .
+      - name: Lancer les tests
+        run: docker run --rm cesizen-backend:test python manage.py test
 
-      - name: Lancer les tests unitaires Django
+  security:
+    name: Scan de sécurité
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lancer Trivy Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "backend/"
+          ignore-unfixed: true
+          format: "table"
+          severity: "CRITICAL,HIGH"
+
+  build-prod:
+    name: Vérification Build Prod
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construire l'image de Prod
         run: |
-          docker run --rm cesizen-backend:test uv run python manage.py test
+          cd backend/cesi_zen_api
+          docker build -t cesizen-backend:prod .

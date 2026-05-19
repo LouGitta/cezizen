@@ -8,6 +8,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/cesi_zen_api:/app
+      - /app/.venv
     environment:
       - PYTHONUNBUFFERED=1
 
