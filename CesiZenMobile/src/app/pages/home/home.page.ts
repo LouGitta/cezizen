@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -24,14 +24,20 @@ import { arrowForwardOutline, heart, heartOutline } from 'ionicons/icons';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthServices } from 'src/app/services/authServices/auth-services';
-import { StorageService } from 'src/app/services/storage/storage';
-import { articleServices } from 'src/app/services/articlesServices/articles';
+import { AuthService } from 'src/app/services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { ArticleService } from 'src/app/services/article.service';
+import { Article } from 'src/app/models/article.model';
 
+/**
+ * Component for the Home dashboard.
+ * Displays articles, category segments, and navigation to articles.
+ */
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
+  standalone: true,
   imports: [
     CommonModule,
     IonHeader,
@@ -56,65 +62,78 @@ import { articleServices } from 'src/app/services/articlesServices/articles';
   ],
 })
 export class HomePage implements OnInit {
-  articles: any = [];
-  selectedCategory: any = 0;
+  private articlesSrv = inject(ArticleService);
+  private authSrv = inject(AuthService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private storageSrv = inject(StorageService);
+
+  articles: Article[] = [];
+  selectedCategory: number | string = 0;
   isLoggedIn: boolean = false;
 
-  constructor(
-    private articlesSrv: articleServices,
-    private authSrv: AuthServices,
-    private router: Router,
-    private route: ActivatedRoute,
-    private storageSrv: StorageService
-  ) {
+  constructor() {
     addIcons({ arrowForwardOutline, heart, heartOutline });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       if (params['filter']) {
-        this.selectedCategory = params['filter'];
+        const filterVal = params['filter'];
+        // Parse numerical categories or fallback to string (e.g. 'favoris')
+        this.selectedCategory = isNaN(Number(filterVal)) ? filterVal : Number(filterVal);
       }
     });
   }
 
-  async ionViewWillEnter() {
+  /**
+   * Refreshes authentication status and syncs articles from the API.
+   */
+  async ionViewWillEnter(): Promise<void> {
     this.isLoggedIn = await this.authSrv.isAuthenticated();
 
-    const articlesSauvegardes = await this.storageSrv.get('offline_articles');
-    if (articlesSauvegardes && articlesSauvegardes.length > 0) {
-      this.articles = articlesSauvegardes;
+    const offlineArticles = await this.storageSrv.get('offline_articles');
+    if (offlineArticles && offlineArticles.length > 0) {
+      this.articles = offlineArticles;
       console.log('Articles chargés depuis le cache local !');
     }
 
     this.articlesSrv.getAllArticles().subscribe({
-      next: async (data: any) => {
+      next: async (data) => {
         this.articles = data;
         await this.storageSrv.set('offline_articles', this.articles);
         console.log('Articles synchronisés avec le serveur et mis en cache !');
       },
       error: (err) => {
-        console.warn('📡 Mode hors-ligne actif pour les articles.');
+        console.warn('📡 Mode hors-ligne actif pour les articles.', err);
       },
     });
   }
 
-  get filteredArticles() {
-    if (this.selectedCategory == 0) {
+  /**
+   * Getter returning articles filtered by the selected category or favorite status.
+   */
+  get filteredArticles(): Article[] {
+    if (this.selectedCategory === 0) {
       return this.articles;
     }
     if (this.selectedCategory === 'favoris') {
       return this.articles.filter(
-        (article: any) => article.is_favorite === true
+        (article) => article.is_favorite === true
       );
     }
 
     return this.articles.filter(
-      (article: any) => article.category == this.selectedCategory
+      (article) => article.category === this.selectedCategory
     );
   }
 
-  async toggleFavorite(event: Event, article: any) {
+  /**
+   * Toggles the favorite status of a specific article.
+   * @param event Click event to stop propagation.
+   * @param article The article model.
+   */
+  async toggleFavorite(event: Event, article: Article): Promise<void> {
     event.stopPropagation();
 
     article.is_favorite = !article.is_favorite;
@@ -122,18 +141,24 @@ export class HomePage implements OnInit {
     await this.storageSrv.set('offline_articles', this.articles);
 
     this.articlesSrv.toggleFavorite(article.id).subscribe({
-      next: async (res: any) => {
+      next: async (res) => {
         article.is_favorite = res.is_favorite;
         await this.storageSrv.set('offline_articles', this.articles);
       },
       error: async (err) => {
+        console.error('Erreur toggleFavorite API :', err);
         article.is_favorite = !article.is_favorite;
         await this.storageSrv.set('offline_articles', this.articles);
       },
     });
   }
 
-  goToArticle(id: Number, article: any) {
+  /**
+   * Sets the active article and navigates to the detail page.
+   * @param id The article ID.
+   * @param article The article model.
+   */
+  goToArticle(id: number, article: Article): void {
     this.articlesSrv.readArticle(article);
     this.router.navigate(['/article', id]);
   }

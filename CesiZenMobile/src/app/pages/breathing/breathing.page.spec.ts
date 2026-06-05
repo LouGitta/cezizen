@@ -1,37 +1,37 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BreathingPage } from './breathing.page';
-import { BreathingServices } from '../../services/breathingServices/breathing-services';
-import { StorageService } from 'src/app/services/storage/storage';
+import { BreathingService } from '../../services/breathing.service';
+import { StorageService } from 'src/app/services/storage.service';
 import { of } from 'rxjs';
 
 describe('BreathingPage', () => {
   let component: BreathingPage;
   let fixture: ComponentFixture<BreathingPage>;
-  let breathingSrvSpy: jasmine.SpyObj<BreathingServices>;
+  let breathingSrvSpy: jasmine.SpyObj<BreathingService>;
   let storageSpy: jasmine.SpyObj<StorageService>;
 
   beforeEach(async () => {
-    // On simule nos services
-    const bSpy = jasmine.createSpyObj('BreathingServices', ['getAllExercices']);
+    // Mock our services
+    const bSpy = jasmine.createSpyObj('BreathingService', ['getAllExercices']);
     const sSpy = jasmine.createSpyObj('StorageService', ['get', 'set']);
 
-    // On simule une réponse de l'API avec un exercice factice
+    // Mock API response with dummy exercise data
     bSpy.getAllExercices.and.returnValue(
-      of([{ id: 1, name: 'Test 5-5', inhale: 5000, hold: 0, exhale: 5000 }])
+      of([{ id: 1, name: 'Test 5-5', inhale: 5000, hold: 0, exhale: 5000, is_active: true }])
     );
-    sSpy.get.and.returnValue(Promise.resolve(null)); // On simule un cache vide
+    sSpy.get.and.returnValue(Promise.resolve(null)); // Mock empty cache
 
     await TestBed.configureTestingModule({
-      imports: [BreathingPage], // Car c'est un composant Standalone
+      imports: [BreathingPage], // Standalone component
       providers: [
-        { provide: BreathingServices, useValue: bSpy },
+        { provide: BreathingService, useValue: bSpy },
         { provide: StorageService, useValue: sSpy },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BreathingPage);
     component = fixture.componentInstance;
-    fixture.detectChanges(); // Déclenche le ngOnInit
+    fixture.detectChanges(); // Triggers ngOnInit
   });
 
   it('doit créer la page', () => {
@@ -39,33 +39,35 @@ describe('BreathingPage', () => {
   });
 
   it('doit basculer isPlaying sur true quand on clique sur Play', () => {
-    // ARRANGE : On s'assure que l'exercice est bien chargé et que l'appli est sur Pause
-    component.currentExercice = {
+    // ARRANGE : Ensure exercise is loaded and app is paused
+    component.currentExercise = {
+      id: 1,
       name: 'Test',
       inhale: 1000,
       hold: 0,
       exhale: 1000,
+      is_active: true,
     };
     component.isPlaying = false;
 
-    // ACT : On appelle la fonction déclenchée par le bouton HTML
+    // ACT : Trigger the button click handler
     component.togglePlay();
 
-    // ASSERT : L'état a dû changer
+    // ASSERT : State should be updated
     expect(component.isPlaying).toBeTrue();
     expect(component.phase).toBe('inhale');
   });
 
   it('doit arrêter le timer quand on change dexercice', () => {
-    // ARRANGE : On simule un exercice en cours
+    // ARRANGE : Mock active exercise
     component.isPlaying = true;
-    spyOn(component, 'stopExercise'); // On "espionne" cette fonction pour voir si elle est appelée
+    spyOn(component, 'stopExercise'); // Spy on function
 
-    // ACT : On simule le changement dans la liste déroulante
+    // ACT : Mock change event from select element
     const fausseSelection = {
-      detail: { value: { name: 'Nouveau', inhale: 2000 } },
+      detail: { value: { id: 2, name: 'Nouveau', inhale: 2000, hold: 0, exhale: 2000, is_active: true } },
     };
-    component.changerExercice(fausseSelection);
+    component.changeExercise(fausseSelection);
 
     // ASSERT
     expect(component.stopExercise).toHaveBeenCalled();

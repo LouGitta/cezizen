@@ -12,10 +12,11 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
-import { articleServices } from 'src/app/services/articlesServices/articles';
-import { StorageService } from 'src/app/services/storage/storage';
+import { ArticleService } from 'src/app/services/article.service';
+import { StorageService } from 'src/app/services/storage.service';
 import { addIcons } from 'ionicons';
 import { heart, heartOutline } from 'ionicons/icons';
+import { Article } from 'src/app/models/article.model';
 
 @Component({
   selector: 'app-article',
@@ -35,18 +36,20 @@ import { heart, heartOutline } from 'ionicons/icons';
     IonIcon,
   ],
 })
+/**
+ * Component representing the Article detail page.
+ */
 export class ArticlePage implements OnInit {
   router: Router = inject(Router);
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  articleId: Number = 0;
-  article: any = {};
+  private articlesSrv = inject(ArticleService);
+  private storageSrv = inject(StorageService);
+  articleId: number = 0;
+  article: Article | null = null;
 
-  constructor(
-    private articlesSrv: articleServices,
-    private storageSrv: StorageService
-  ) {
+  constructor() {
     addIcons({ heart, heartOutline });
-    this.article = articlesSrv.getArticle();
+    this.article = this.articlesSrv.getArticle();
   }
 
   ngOnInit() {
@@ -58,7 +61,10 @@ export class ArticlePage implements OnInit {
     }
   }
 
-  async toggleFavorite() {
+  /**
+   * Toggles the favorite status of the article, updating both the API and offline storage.
+   */
+  async toggleFavorite(): Promise<void> {
     if (!this.article || !this.article.id) return;
 
     this.article.is_favorite = !this.article.is_favorite;
@@ -66,24 +72,32 @@ export class ArticlePage implements OnInit {
     await this.updateOfflineStorage();
 
     this.articlesSrv.toggleFavorite(this.article.id).subscribe({
-      next: async (res: any) => {
-        this.article.is_favorite = res.is_favorite;
-        await this.updateOfflineStorage();
+      next: async (res) => {
+        if (this.article) {
+          this.article.is_favorite = res.is_favorite;
+          await this.updateOfflineStorage();
+        }
       },
       error: async (err) => {
         console.error('Erreur API Favori :', err);
-        this.article.is_favorite = !this.article.is_favorite;
-        await this.updateOfflineStorage();
+        if (this.article) {
+          this.article.is_favorite = !this.article.is_favorite;
+          await this.updateOfflineStorage();
+        }
       },
     });
   }
 
-  private async updateOfflineStorage() {
-    const offlineArticles =
+  /**
+   * Syncs the current article favorite status to the cached list of articles in storage.
+   */
+  private async updateOfflineStorage(): Promise<void> {
+    if (!this.article) return;
+    const offlineArticles: Article[] =
       (await this.storageSrv.get('offline_articles')) || [];
 
     const index = offlineArticles.findIndex(
-      (a: any) => a.id === this.article.id
+      (a: Article) => a.id === this.article!.id
     );
 
     if (index > -1) {

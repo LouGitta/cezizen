@@ -1,5 +1,5 @@
 import { Router, RouterModule } from '@angular/router';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
@@ -33,8 +33,9 @@ import {
   logOutOutline,
   alertCircleOutline,
 } from 'ionicons/icons';
-import { AuthServices } from 'src/app/services/authServices/auth-services';
+import { AuthService } from 'src/app/services/auth.service';
 import { AlertController } from '@ionic/angular';
+import { UserCredentials } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-user',
@@ -63,9 +64,16 @@ import { AlertController } from '@ionic/angular';
     IonMenuButton,
   ],
 })
-export class UserPage {
-  username: string = '';
-  password: string = '';
+/**
+ * Component representing the login, registration, and user profile dashboard.
+ */
+export class UserPage implements OnInit {
+  private authSrv = inject(AuthService);
+  private router = inject(Router);
+  private alertController = inject(AlertController);
+
+  username: string = 'lou';
+  password: string = 'abcd';
   passwordConfirm: string = '';
   showPassword: boolean = false;
   isLoggedIn: boolean = false;
@@ -73,11 +81,7 @@ export class UserPage {
   errorMessage: string = '';
   rgpdAccepted: boolean = false;
 
-  constructor(
-    private authSrv: AuthServices,
-    private router: Router,
-    private alertController: AlertController
-  ) {
+  constructor() {
     addIcons({
       eye,
       eyeOff,
@@ -92,22 +96,25 @@ export class UserPage {
     });
   }
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.isLoggedIn = await this.authSrv.isAuthenticated();
   }
 
-  async ionViewWillEnter() {
+  async ionViewWillEnter(): Promise<void> {
     console.log(await this.authSrv.isAuthenticated());
     this.isLoggedIn = await this.authSrv.isAuthenticated();
   }
 
-  seConnecter() {
+  /**
+   * Submits login credentials to authenticate the user.
+   */
+  seConnecter(): void {
     this.errorMessage = '';
     if (!this.username || !this.password) {
       this.errorMessage = 'Veuillez remplir tous les champs.';
       return;
     }
-    const user = { username: this.username, password: this.password };
+    const user: UserCredentials = { username: this.username, password: this.password };
     this.authSrv.login(user).subscribe({
       next: (response) => {
         console.log('Connexion réussie !', response);
@@ -126,7 +133,10 @@ export class UserPage {
     });
   }
 
-  sInscrire() {
+  /**
+   * Registers a new user account if RGPD is accepted and passwords match.
+   */
+  sInscrire(): void {
     this.errorMessage = '';
     if (!this.rgpdAccepted) {
       this.errorMessage =
@@ -144,7 +154,7 @@ export class UserPage {
       return;
     }
 
-    const newUser = { username: this.username, password: this.password };
+    const newUser: UserCredentials = { username: this.username, password: this.password };
 
     this.authSrv.register(newUser).subscribe({
       next: (res) => {
@@ -164,16 +174,19 @@ export class UserPage {
     });
   }
 
-  async seDeconnecter() {
+  /**
+   * Logs out the user by clearing storage and resetting state.
+   */
+  async seDeconnecter(): Promise<void> {
     await this.authSrv.logout();
     this.isLoggedIn = false;
   }
 
-  ouvrirParametres() {
+  ouvrirParametres(): void {
     this.router.navigate(['/settings']);
   }
 
-  async showForgotPasswordAlert() {
+  async showForgotPasswordAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Réinitialisation',
       message:

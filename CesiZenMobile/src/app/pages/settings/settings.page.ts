@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -29,7 +29,7 @@ import {
 } from 'ionicons/icons';
 
 import { Router } from '@angular/router';
-import { AuthServices } from 'src/app/services/authServices/auth-services';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-settings',
@@ -55,18 +55,22 @@ import { AuthServices } from 'src/app/services/authServices/auth-services';
     IonMenuButton,
   ],
 })
-export class SettingsPage implements OnInit {
+/**
+ * Component representing the settings page.
+ * Allows updating profile credentials or deleting the account.
+ */
+export class SettingsPage {
+  private alertCtrl = inject(AlertController);
+  private toastCtrl = inject(ToastController);
+  private authSrv = inject(AuthService);
+  private router = inject(Router);
+
   username: string = '';
   currentPassword: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
 
-  constructor(
-    private alertCtrl: AlertController,
-    private toastCtrl: ToastController,
-    private authSrv: AuthServices,
-    private router: Router
-  ) {
+  constructor() {
     addIcons({
       documentTextOutline,
       shieldCheckmarkOutline,
@@ -76,10 +80,11 @@ export class SettingsPage implements OnInit {
     });
   }
 
-  ngOnInit() {}
-
-  async saveProfile() {
-    const payload: any = {};
+  /**
+   * Validates and submits the profile changes (username and/or password).
+   */
+  async saveProfile(): Promise<void> {
+    const payload: { username?: string; current_password?: string; new_password?: string } = {};
 
     if (this.username.trim() !== '') {
       payload.username = this.username;

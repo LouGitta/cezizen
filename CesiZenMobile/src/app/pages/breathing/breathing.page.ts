@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -13,17 +13,23 @@ import {
   IonMenuButton,
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { BreathingServices } from '../../services/breathingServices/breathing-services';
+import { BreathingService } from '../../services/breathing.service';
 import { FormsModule } from '@angular/forms';
 import { pause, play, arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Router } from '@angular/router';
-import { StorageService } from 'src/app/services/storage/storage';
+import { StorageService } from 'src/app/services/storage.service';
+import { BreathingExercise } from 'src/app/models/breathing-exercise.model';
 
+/**
+ * Component for the Breathing Exercises page.
+ * Implements a cyclic inhale-hold-exhale timer with animations.
+ */
 @Component({
   selector: 'app-breathing',
   templateUrl: 'breathing.page.html',
   styleUrls: ['breathing.page.scss'],
+  standalone: true,
   imports: [
     IonHeader,
     IonToolbar,
@@ -40,47 +46,53 @@ import { StorageService } from 'src/app/services/storage/storage';
     IonMenuButton,
   ],
 })
-export class BreathingPage implements OnInit {
-  exercices: any[] = [];
-  currentExercice: any = null;
+export class BreathingPage implements OnInit, OnDestroy {
+  private exerciseSrv = inject(BreathingService);
+  private router = inject(Router);
+  private storageSrv = inject(StorageService);
+
+  exercises: BreathingExercise[] = [];
+  currentExercise: BreathingExercise | null = null;
   isPlaying: boolean = false;
   phase: 'inhale' | 'hold' | 'exhale' = 'inhale';
   counter: number = 0;
   private timer: any;
 
-  constructor(
-    private exerciceSrv: BreathingServices,
-    private router: Router,
-    private storageSrv: StorageService
-  ) {
+  constructor() {
     addIcons({ play, pause, arrowBack });
   }
 
-  async ngOnInit() {
-    const exercicesSauvegardes = await this.storageSrv.get('offline_breathing');
+  /**
+   * Initializes the list of exercises from storage (offline cache) and syncs them from the API.
+   */
+  async ngOnInit(): Promise<void> {
+    const offlineExercises = await this.storageSrv.get('offline_breathing');
 
-    if (exercicesSauvegardes && exercicesSauvegardes.length > 0) {
-      this.exercices = exercicesSauvegardes;
-      this.currentExercice = this.exercices[0];
+    if (offlineExercises && offlineExercises.length > 0) {
+      this.exercises = offlineExercises;
+      this.currentExercise = this.exercises[0];
     }
 
-    this.exerciceSrv.getAllExercices().subscribe({
-      next: async (data: any) => {
-        this.exercices = data;
+    this.exerciseSrv.getAllExercices().subscribe({
+      next: async (data) => {
+        this.exercises = data;
 
-        if (!this.currentExercice || !exercicesSauvegardes) {
-          this.currentExercice = this.exercices[0];
+        if (!this.currentExercise || !offlineExercises) {
+          this.currentExercise = this.exercises[0];
         }
 
         await this.storageSrv.set('offline_breathing', data);
       },
       error: (err) => {
-        console.warn(err);
+        console.warn('📡 Mode hors-ligne actif pour les exercices de respiration.', err);
       },
     });
   }
 
-  togglePlay() {
+  /**
+   * Toggles play/pause state of the current exercise.
+   */
+  togglePlay(): void {
     this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
       this.startExercise();
@@ -89,16 +101,24 @@ export class BreathingPage implements OnInit {
     }
   }
 
-  changerExercice(event: any) {
+  /**
+   * Triggered when a new exercise is selected.
+   * @param event The selection change event.
+   */
+  changeExercise(event: any): void {
     this.stopExercise();
     this.isPlaying = false;
-    this.currentExercice = event.detail.value;
+    this.currentExercise = event.detail.value;
     this.phase = 'inhale';
   }
 
-  startExercise() {
+  /**
+   * Starts the cycle of the breathing exercise.
+   */
+  startExercise(): void {
+    if (!this.currentExercise) return;
     this.phase = 'inhale';
-    this.counter = this.currentExercice.inhale / 1000;
+    this.counter = this.currentExercise.inhale / 1000;
 
     this.timer = setInterval(() => {
       if (this.counter > 1) {
@@ -109,30 +129,41 @@ export class BreathingPage implements OnInit {
     }, 1000);
   }
 
-  stopExercise() {
+  /**
+   * Stops the active exercise timer.
+   */
+  stopExercise(): void {
     if (this.timer) {
       clearInterval(this.timer);
     }
   }
 
-  nextPhase() {
+  /**
+   * Advances the breathing exercise cycle to the next phase (inhale -> hold -> exhale -> inhale).
+   */
+  nextPhase(): void {
+    if (!this.currentExercise) return;
+
     if (this.phase === 'inhale') {
-      if (this.currentExercice.hold > 0) {
+      if (this.currentExercise.hold > 0) {
         this.phase = 'hold';
-        this.counter = this.currentExercice.hold / 1000;
+        this.counter = this.currentExercise.hold / 1000;
       } else {
         this.phase = 'exhale';
-        this.counter = this.currentExercice.exhale / 1000;
+        this.counter = this.currentExercise.exhale / 1000;
       }
     } else if (this.phase === 'hold') {
       this.phase = 'exhale';
-      this.counter = this.currentExercice.exhale / 1000;
+      this.counter = this.currentExercise.exhale / 1000;
     } else {
       this.phase = 'inhale';
-      this.counter = this.currentExercice.inhale / 1000;
+      this.counter = this.currentExercise.inhale / 1000;
     }
   }
 
+  /**
+   * Returns display-friendly French text for the current breathing phase.
+   */
   getPhaseText(): string {
     if (!this.isPlaying) return 'PRÊT';
     switch (this.phase) {
@@ -147,18 +178,24 @@ export class BreathingPage implements OnInit {
     }
   }
 
+  /**
+   * Returns the transition duration in CSS string format for breathing circle animation.
+   */
   getTransitionDuration(): string {
-    if (!this.isPlaying || !this.currentExercice) return '500ms';
-    if (this.phase === 'inhale') return `${this.currentExercice.inhale}ms`;
+    if (!this.isPlaying || !this.currentExercise) return '500ms';
+    if (this.phase === 'inhale') return `${this.currentExercise.inhale}ms`;
     if (this.phase === 'hold') return '500ms';
-    return `${this.currentExercice.exhale}ms`;
+    return `${this.currentExercise.exhale}ms`;
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stopExercise();
   }
 
-  retourHub() {
+  /**
+   * Stops the exercise and routes the user back to home page.
+   */
+  retourHub(): void {
     this.stopExercise();
     this.isPlaying = false;
     this.phase = 'inhale';
@@ -166,16 +203,20 @@ export class BreathingPage implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  ionViewWillEnter() {
+  ionViewWillEnter(): void {
     const tabBar = document.querySelector('ion-tab-bar');
     if (tabBar) tabBar.style.display = 'none';
   }
 
-  ionViewWillLeave() {
+  ionViewWillLeave(): void {
     const tabBar = document.querySelector('ion-tab-bar');
     if (tabBar) tabBar.style.display = 'flex';
   }
-  comparerExercices(e1: any, e2: any): boolean {
+
+  /**
+   * Helper function for ion-select object comparison.
+   */
+  compareExercises(e1: BreathingExercise | null, e2: BreathingExercise | null): boolean {
     return e1 && e2 ? e1.id === e2.id : e1 === e2;
   }
 }

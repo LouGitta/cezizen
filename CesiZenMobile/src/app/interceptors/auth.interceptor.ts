@@ -5,30 +5,37 @@ import {
   HttpClient,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { StorageService } from '../services/storage/storage';
+import { Router } from '@angular/router';
+import { StorageService } from '../services/storage.service';
 import { from, switchMap, catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { AuthResponse } from '../models/user.model';
 
+/**
+ * Functional HTTP Interceptor that attaches the JWT Access Token to outbound requests
+ * and handles automatic token refresh if a 401 Unauthorized error is intercepted.
+ */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const httpBackend = inject(HttpBackend);
   const http = new HttpClient(httpBackend);
   const storageSrv = inject(StorageService);
+  const router = inject(Router);
 
   return from(storageSrv.get('access_token')).pipe(
     switchMap((token) => {
       let authReq = req;
 
-      // 1. On attache le token s'il existe (mais on ne fait pas de return ici !)
+      // 1. Attach authorization token if it exists
       if (token) {
         authReq = req.clone({
           headers: req.headers.set('Authorization', `Bearer ${token}`),
         });
       }
 
-      // 2. On envoie la requête et on écoute la réponse (pour TOUTES les requêtes)
+      // 2. Send request and intercept potential errors
       return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
-          // 3. Si erreur 401 (Token expiré)
+          // 3. If unauthorized (401) and not already a login or refresh request
           if (
             error.status === 401 &&
             !req.url.includes('login') &&
@@ -42,16 +49,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                   const refreshUrl =
                     environment.url + environment.authUrl + 'refresh/';
 
-                  // On demande un nouveau token à Django
-                  return http.post(refreshUrl, { refresh: refreshToken }).pipe(
-                    switchMap((res: any) => {
-                      // On sauvegarde les nouveaux tokens
+                  // Ask Django REST for a new pair of tokens
+                  return http.post<AuthResponse>(refreshUrl, { refresh: refreshToken }).pipe(
+                    switchMap((res: AuthResponse) => {
+                      // Save new tokens
                       storageSrv.set('access_token', res.access);
                       if (res.refresh) {
                         storageSrv.set('refresh_token', res.refresh);
                       }
 
-                      // On relance la requête originale avec le nouveau sésame
+                      // Retry the original request with the new access token
                       const retriedReq = req.clone({
                         headers: req.headers.set(
                           'Authorization',
@@ -59,21 +66,20 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                         ),
                       });
 
-                      console.log(
-                        '✅ Requête relancée avec le nouveau token !'
-                      );
+                      console.log('✅ Requête relancée avec le nouveau token !');
                       return next(retriedReq);
                     }),
 
                     catchError((refreshErr) => {
-                      // Si le refresh_token est lui aussi périmé, c'est mort.
+                      // If the refresh token is also invalid/expired, log out and redirect
                       console.error(
                         '❌ Echec du rafraîchissement. Suppression des tokens.'
                       );
                       storageSrv.remove('access_token');
                       storageSrv.remove('refresh_token');
 
-                      // Ici, idéalement, tu pourrais utiliser le Router pour renvoyer au login
+                      // Redirect user to the login/auth page
+                      router.navigate(['/user']);
 
                       return throwError(() => refreshErr);
                     })
@@ -83,10 +89,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               })
             );
           }
-          // Pour toutes les autres erreurs (404, 500, etc.)
+          // For any other errors (404, 500, etc.)
           return throwError(() => error);
         })
       );
     })
   );
 };
+
