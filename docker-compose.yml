@@ -1,29 +1,26 @@
-version: '3.8'
-
 services:
   # --- Service API Django ---
   backend:
     build: 
-      context: ./backend/cesi_zen_api # Le chemin vers ton dossier Django
+      context: ./backend/cesi_zen_api
       dockerfile: Dockerfile.dev
     ports:
       - "8000:8000"
     volumes:
-      # Synchronise ton code en temps réel (Hot Reload)
       - ./backend/cesi_zen_api:/app
+      - /app/.venv
     environment:
       - PYTHONUNBUFFERED=1
 
   # --- Service Application Mobile Web ---
   frontend:
     build: 
-      context: ./CesiZenMobile # Le chemin vers ton dossier Ionic
+      context: ./CesiZenMobile
       dockerfile: Dockerfile.dev
     ports:
       - "8100:8100"
     volumes:
-      # Synchronise ton code, mais isole le dossier node_modules
       - ./CesiZenMobile:/app
       - /app/node_modules
     depends_on:
-      - backend # S'assure que l'API démarre avant le frontend
+      - backend

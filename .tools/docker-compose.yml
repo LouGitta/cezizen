@@ -1,0 +1,19 @@
+services:
+  backend:
+    image: ghcr.io/lougitta/cezizen/backend:develop
+    ports:
+      - "8000:8000"
+    volumes:
+      - django_static:/app/staticfiles
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/lougitta/cezizen/frontend:develop
+    ports:
+      - "80:80"
+    volumes:
+      - django_static:/usr/share/nginx/html/static
+    restart: unless-stopped
+
+volumes:
+  django_static:
