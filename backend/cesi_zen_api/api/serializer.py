@@ -1,5 +1,4 @@
 from django.contrib.auth.models import Group, User
-from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from .models import Article, Favorite, BreathingExercice, Category
 
