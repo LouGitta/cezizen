@@ -2,9 +2,11 @@ version: 2
 updates:
   - package-ecosystem: "pip"
     directory: "/backend/cesi_zen_api"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
   - package-ecosystem: "npm"
     directory: "/CesiZenMobile"
+    target-branch: "develop"
     schedule:
       interval: "weekly"
