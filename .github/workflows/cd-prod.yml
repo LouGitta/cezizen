@@ -16,3 +16,30 @@ jobs:
           echo "📢 Branche main mise à jour."
           echo "🚀 La VM de production va détecter et pull les modifications."
           echo "======================================================"
+
+  # --------------------------------------------------------------------------------
+  # 🚀 JOB DE DÉPLOIEMENT SSH DÉSACTIVÉ (PULL-BASED PAR DÉFAUT)
+  # Pour réactiver le déploiement poussé (Push CD) depuis GitHub :
+  # 1. Décommentez le bloc de code ci-dessous.
+  # 2. Configurez les secrets dans GitHub (VM_HOST, VM_USER, VM_SSH_KEY, VM_PROJECT_PATH).
+  # --------------------------------------------------------------------------------
+  # deploy:
+  #   name: Déploiement PROD sur VM (SSH Push)
+  #   runs-on: ubuntu-latest
+  #   needs: [simulate-deploy-prod]
+  #   steps:
+  #     - name: Déploiement via SSH
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ secrets.VM_HOST }}
+  #         username: ${{ secrets.VM_USER }}
+  #         key: ${{ secrets.VM_SSH_KEY }}
+  #         port: ${{ secrets.VM_PORT || 22 }}
+  #         script: |
+  #           cd ${{ secrets.VM_PROJECT_PATH }}
+  #           git checkout main
+  #           git pull origin main
+  #           docker compose -f .tools/docker-compose.yml down
+  #           docker compose -f .tools/docker-compose.yml up -d --build
+  #           docker compose -f .tools/docker-compose.yml exec -T backend python manage.py migrate
+  #           docker compose -f .tools/docker-compose.yml exec -T backend python manage.py collectstatic --noinput
