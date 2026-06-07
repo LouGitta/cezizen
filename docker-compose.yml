@@ -1,4 +1,22 @@
 services:
+  # --- Service Database Postgres ---
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=cesi_zen
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=cesi_zen_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cesi_zen"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   # --- Service API Django ---
   backend:
     build: 
@@ -11,6 +29,15 @@ services:
       - /app/.venv
     environment:
       - PYTHONUNBUFFERED=1
+      - POSTGRES_DB=cesi_zen
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=cesi_zen_password
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - USE_POSTGRES=True
+    depends_on:
+      db:
+        condition: service_healthy
 
   # --- Service Application Mobile Web ---
   frontend:
@@ -24,3 +51,6 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+
+volumes:
+  postgres_data:
