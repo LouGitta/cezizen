@@ -72,8 +72,8 @@ export class UserPage implements OnInit {
   private router = inject(Router);
   private alertController = inject(AlertController);
 
-  username: string = 'lou';
-  password: string = 'abcd';
+  username: string = '';
+  password: string = '';
   passwordConfirm: string = '';
   showPassword: boolean = false;
   isLoggedIn: boolean = false;
