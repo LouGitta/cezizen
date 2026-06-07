@@ -30,7 +30,7 @@ jobs:
           cd backend/cesi_zen_api
           docker build -f Dockerfile.dev -t cesizen-backend:test .
       - name: Lancer les tests
-        run: docker run --rm cesizen-backend:test python manage.py test
+        run: docker run --rm -e USE_POSTGRES=False cesizen-backend:test python manage.py test
 
   security:
     name: Scan de sécurité
