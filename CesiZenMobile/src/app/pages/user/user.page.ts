@@ -186,6 +186,10 @@ export class UserPage implements OnInit {
     this.router.navigate(['/settings']);
   }
 
+  signalerAnomalie(): void {
+    window.open('https://github.com/LouGitta/cezizen/issues', '_blank');
+  }
+
   async showForgotPasswordAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Réinitialisation',

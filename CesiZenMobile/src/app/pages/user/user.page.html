@@ -117,9 +117,13 @@
           <ion-icon slot="start" name="stats-chart" style="color: #2A9D8F;"></ion-icon>
           <ion-label>Mon historique</ion-label>
         </ion-item>
-        <ion-item button detail="true" lines="none">
+        <ion-item button detail="true" lines="full">
           <ion-icon slot="start" name="notifications" style="color: #E9C46A;"></ion-icon>
           <ion-label>Rappels quotidiens</ion-label>
+        </ion-item>
+        <ion-item button detail="true" lines="none" (click)="signalerAnomalie()">
+          <ion-icon slot="start" name="bug-outline" style="color: #E76F51;"></ion-icon>
+          <ion-label>Signaler une anomalie / Support</ion-label>
         </ion-item>
       </ion-list>
 
