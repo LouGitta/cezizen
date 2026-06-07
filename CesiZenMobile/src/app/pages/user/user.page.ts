@@ -108,7 +108,7 @@ export class UserPage implements OnInit {
   /**
    * Submits login credentials to authenticate the user.
    */
-  seConnecter(): void {
+  login(): void {
     this.errorMessage = '';
     if (!this.username || !this.password) {
       this.errorMessage = 'Veuillez remplir tous les champs.';
@@ -136,7 +136,7 @@ export class UserPage implements OnInit {
   /**
    * Registers a new user account if RGPD is accepted and passwords match.
    */
-  sInscrire(): void {
+  register(): void {
     this.errorMessage = '';
     if (!this.rgpdAccepted) {
       this.errorMessage =
@@ -159,7 +159,7 @@ export class UserPage implements OnInit {
     this.authSrv.register(newUser).subscribe({
       next: (res) => {
         console.log('Compte créé avec succès !', res);
-        this.seConnecter();
+        this.login();
       },
       error: (err) => {
         console.error("Erreur d'inscription :", err);
@@ -177,16 +177,16 @@ export class UserPage implements OnInit {
   /**
    * Logs out the user by clearing storage and resetting state.
    */
-  async seDeconnecter(): Promise<void> {
+  async logout(): Promise<void> {
     await this.authSrv.logout();
     this.isLoggedIn = false;
   }
 
-  ouvrirParametres(): void {
+  openSettings(): void {
     this.router.navigate(['/settings']);
   }
 
-  signalerAnomalie(): void {
+  reportIssue(): void {
     window.open('https://github.com/LouGitta/cezizen/issues', '_blank');
   }
 
