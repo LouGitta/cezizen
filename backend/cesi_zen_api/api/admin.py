@@ -21,6 +21,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "published", "author")
     list_filter = ("category",)
     search_fields = ("title",)
+    readonly_fields = ("author",)
 
     fieldsets = (
         (

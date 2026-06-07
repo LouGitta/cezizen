@@ -17,9 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        password = validated_data.pop("password")
-        validated_data["password"] = make_password(password)
-        return super().create(validated_data)
+        return User.objects.create_user(**validated_data)
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):

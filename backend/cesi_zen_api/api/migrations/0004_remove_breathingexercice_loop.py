@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0003_article_image'),
+        ("api", "0003_article_image"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='breathingexercice',
-            name='loop',
+            model_name="breathingexercice",
+            name="loop",
         ),
     ]

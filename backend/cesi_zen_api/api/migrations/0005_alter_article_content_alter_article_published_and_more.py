@@ -6,25 +6,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0004_remove_breathingexercice_loop'),
+        ("api", "0004_remove_breathingexercice_loop"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='article',
-            name='content',
+            model_name="article",
+            name="content",
             field=ckeditor.fields.RichTextField(),
         ),
         migrations.AlterField(
-            model_name='article',
-            name='published',
+            model_name="article",
+            name="published",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='article',
-            name='title',
+            model_name="article",
+            name="title",
             field=models.CharField(max_length=100),
         ),
     ]
