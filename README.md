@@ -82,13 +82,34 @@ Dans le fichier `settings.py`, Django utilise par défaut PostgreSQL s'il trouve
 
 ---
 
+## 🔒 Sécurité et Clé Secrète Django
+
+Pour des raisons de sécurité, la clé secrète de Django (`SECRET_KEY`) et le mode `DEBUG` sont externalisés via des variables d'environnement.
+
+### 🔑 Génération d'une nouvelle clé secrète (Initialisation)
+Lors de l'installation du projet en production ou pour un nouvel environnement de développement, vous devez générer une clé secrète unique et sécurisée. Exécutez la commande suivante dans votre terminal :
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(50))"
+```
+
+### ⚙️ Configuration
+- **Développement** : Les variables sont déjà préconfigurées avec des valeurs par défaut dans le fichier [docker-compose.yml](file:///c:/Users/lougi/Dev/cezizen/docker-compose.yml).
+- **Production (VM)** : Vous devez créer un fichier `.env` à la racine du projet sur votre VM et y ajouter les variables suivantes :
+  ```env
+  SECRET_KEY=votre_cle_secrete_generee_precedemment
+  DEBUG=False
+  ```
+  Le fichier [docker-compose.yml](file:///c:/Users/lougi/Dev/cezizen/.tools/docker-compose.yml) du dossier `.tools` chargera automatiquement ces variables.
+
+---
+
 ## ☁️ Déploiement sur une Machine Virtuelle (VM)
 
-Le déploiement sur la VM de production repose sur un flux continu Git et Docker Compose.
+Le déploiement sur la VM de production est basé sur un **modèle tiré (pull-based)**. C'est la machine virtuelle qui initie la récupération des mises à jour depuis GitHub, évitant ainsi d'avoir à ouvrir le port SSH de la VM vers l'extérieur (meilleure sécurité).
 
 ### Processus de Déploiement (VM de Production)
 
-Lors du déploiement, la machine virtuelle doit effectuer les étapes suivantes :
+Lors du déploiement, la machine virtuelle effectue les étapes suivantes :
 1. Se positionner dans le dossier du projet.
 2. Récupérer les dernières modifications de la branche principale (`main`).
 3. Reconstruire et redémarrer les conteneurs Docker en arrière-plan.
@@ -97,7 +118,8 @@ Lors du déploiement, la machine virtuelle doit effectuer les étapes suivantes 
 
 #### Script de Déploiement Automatique (`deploy.sh`)
 
-Vous pouvez créer un script `deploy.sh` sur votre VM pour automatiser ce processus :
+Vous pouvez créer un script `deploy.sh` sur votre VM pour automatiser ce processus. 
+*Note : Assurez-vous d'avoir configuré le fichier `.env` comme indiqué dans la section précédente.*
 
 ```bash
 #!/bin/bash
@@ -112,17 +134,17 @@ cd /chemin/vers/votre/projet/cezizen
 git checkout main
 git pull origin main
 
-# 3. Recréer et redémarrer la stack Docker
-docker compose down
-docker compose up -d --build
+# 3. Recréer et redémarrer la stack Docker (utilise la configuration de déploiement)
+docker compose -f .tools/docker-compose.yml down
+docker compose -f .tools/docker-compose.yml up -d --build
 
 # 4. Appliquer les migrations de base de données
-docker compose exec -T backend python manage.py migrate
+docker compose -f .tools/docker-compose.yml exec -T backend python manage.py migrate
 
 # 5. Collecter les fichiers statiques
-docker compose exec -T backend python manage.py collectstatic --noinput
+docker compose -f .tools/docker-compose.yml exec -T backend python manage.py collectstatic --noinput
 
-# 6. Nettoyer les anciennes images Docker non utilisées (facultatif mais recommandé)
+# 6. Nettoyer les anciennes images Docker non utilisées
 docker image prune -f
 
 echo "=== Déploiement terminé avec succès ! ==="
@@ -133,13 +155,13 @@ Rendez le script exécutable :
 chmod +x deploy.sh
 ```
 
-Puis exécutez-le simplement avec `./deploy.sh`.
+Puis lancez le déploiement manuellement avec `./deploy.sh` ou configurez une tâche planifiée (Cron job) sur la VM pour l'exécuter périodiquement.
 
 ---
 
 ## 🤖 CI/CD - Workflows GitHub Actions
 
-Le projet intègre des pipelines automatiques d'intégration continue (CI) et de déploiement continu (CD).
+Le projet intègre des pipelines automatiques d'intégration continue (CI) et de notification de livraison (CD) sous GitHub Actions.
 
 ### 1. Intégration Continue (CI)
 - **CI Backend** : S'exécute à chaque push sur `main`, `develop` et `feature/*`. Il effectue :
@@ -152,16 +174,24 @@ Le projet intègre des pipelines automatiques d'intégration continue (CI) et de
   - Un scan de sécurité avec **Trivy**.
   - La validation de la compilation et du build de production Docker.
 
-### 2. Déploiement Continu (CD)
-Le fichier `.github/workflows/cd-prod.yml` automatise le déploiement sur votre VM à chaque push/merge sur la branche `main`.
+### 2. Veille de Sécurité Automatisée
+Le projet intègre **Dependabot** (`.github/dependabot.yml`) qui vérifie chaque semaine si de nouvelles mises à jour de sécurité sont disponibles pour vos dépendances Python (`pip`) et Angular (`npm`), puis ouvre des Pull Requests automatiques en cas de vulnérabilité détectée.
 
-#### Configuration des Secrets GitHub
-Pour activer le déploiement automatique par SSH, vous devez configurer les **Secrets** suivants dans les paramètres de votre dépôt GitHub (`Settings > Secrets and variables > Actions`) :
+### 3. Notification de Déploiement (CD)
+Le fichier `.github/workflows/cd-prod.yml` envoie une notification de disponibilité des mises à jour à chaque push sur la branche `main` pour signaler à la VM de lancer son processus de récupération (`pull`).
 
-| Nom du Secret | Description | Exemple |
-| :--- | :--- | :--- |
-| `VM_HOST` | Adresse IP publique ou nom d'hôte de la VM | `192.168.1.100` ou `my-vm.host.com` |
-| `VM_USER` | Nom de l'utilisateur de connexion SSH sur la VM | `ubuntu` ou `debian` |
-| `VM_SSH_KEY` | Contenu de la clé privée SSH autorisée sur la VM | `-----BEGIN OPENSSH PRIVATE KEY-----...` |
-| `VM_PORT` | Port SSH de la VM (facultatif, par défaut 22) | `22` |
-| `VM_PROJECT_PATH` | Chemin absolu du projet sur le disque de la VM | `/home/ubuntu/cezizen` |
+---
+
+## 📋 Gestion des Anomalies et Évolutions (Ticketing)
+
+Conformément aux exigences du Ministère, un système de gestion des tickets est configuré directement dans l'outil de versioning GitHub :
+
+### 1. Modèles de Tickets (Issue Templates)
+Dans le dossier `.github/ISSUE_TEMPLATE`, deux modèles de tickets prédéfinis sont disponibles pour structurer les échanges :
+- **Signalement d'anomalie** : Permet de qualifier précisément les anomalies en renseignant le comportement attendu, les étapes de reproduction et le **niveau de gravité** (Incident Bloquant Critique/Fort, Incident Majeur, Incident Mineur) conformément à la grille d'évaluation du Ministère.
+- **Demande d'évolution** : Permet de formuler les propositions d'améliorations et de nouvelles fonctionnalités de manière standardisée.
+
+### 2. Organisation Kanban
+Les tickets sont pilotés visuellement à l'aide d'un tableau Kanban **GitHub Projects** configuré avec les colonnes :
+`À faire` ➡️ `En cours` ➡️ `En revue` ➡️ `Terminé`.
+Ce tableau Kanban sert de démonstration de gestion agile des anomalies et évolutions lors de la soutenance.
