@@ -35,6 +35,8 @@ services:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
       - USE_POSTGRES=True
+      - SECRET_KEY=django-insecure-5a8j@)kwz!nsb^-5+7pp45$gk)vr-(h*_j56ao#!&ui&8rd^7k
+      - DEBUG=True
     depends_on:
       db:
         condition: service_healthy
