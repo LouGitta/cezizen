@@ -6,33 +6,13 @@ on:
 
 jobs:
   simulate-deploy-prod:
-    name: Simulation Déploiement PROD
+    name: Notification CD PROD
     runs-on: ubuntu-latest
 
     steps:
-      - name: Afficher un message de test
+      - name: Afficher le statut de déploiement
         run: |
           echo "======================================================"
-          echo "✅ Le déclencheur PROD fonctionne de manière simulée !"
+          echo "📢 Branche main mise à jour."
+          echo "🚀 La VM de production va détecter et pull les modifications."
           echo "======================================================"
-
-  deploy:
-    name: Déploiement PROD sur VM
-    runs-on: ubuntu-latest
-    needs: [simulate-deploy-prod]
-    steps:
-      - name: Déploiement via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USER }}
-          key: ${{ secrets.VM_SSH_KEY }}
-          port: ${{ secrets.VM_PORT || 22 }}
-          script: |
-            cd ${{ secrets.VM_PROJECT_PATH }}
-            git checkout main
-            git pull origin main
-            docker compose down
-            docker compose up -d --build
-            docker compose exec -T backend python manage.py migrate
-            docker compose exec -T backend python manage.py collectstatic --noinput
