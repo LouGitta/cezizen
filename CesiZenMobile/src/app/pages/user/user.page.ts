@@ -114,7 +114,10 @@ export class UserPage implements OnInit {
       this.errorMessage = 'Veuillez remplir tous les champs.';
       return;
     }
-    const user: UserCredentials = { username: this.username, password: this.password };
+    const user: UserCredentials = {
+      username: this.username,
+      password: this.password,
+    };
     this.authSrv.login(user).subscribe({
       next: (response) => {
         console.log('Connexion réussie !', response);
@@ -154,7 +157,10 @@ export class UserPage implements OnInit {
       return;
     }
 
-    const newUser: UserCredentials = { username: this.username, password: this.password };
+    const newUser: UserCredentials = {
+      username: this.username,
+      password: this.password,
+    };
 
     this.authSrv.register(newUser).subscribe({
       next: (res) => {
@@ -187,7 +193,10 @@ export class UserPage implements OnInit {
   }
 
   reportIssue(): void {
-    window.open('https://github.com/LouGitta/cezizen/issues', '_blank');
+    window.open(
+      'https://cesizenlgi.atlassian.net/jira/software/form/1ac51179-2bd3-49c3-944b-c0ce0fbbb1dd?atlOrigin=eyJpIjoiNDIzODk2ZjJjMDY2NDAwZmI5NTJlOGE4NTI5MGFiNmQiLCJwIjoiaiJ9',
+      '_blank'
+    );
   }
 
   async showForgotPasswordAlert(): Promise<void> {
