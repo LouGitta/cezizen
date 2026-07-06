@@ -4,3 +4,6 @@
 __pycache__/
 # Frontend
 node_modules/
+
+# Local evaluation reports
+docs/rapport_evaluation_bloc3.md
