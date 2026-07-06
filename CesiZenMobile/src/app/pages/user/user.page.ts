@@ -192,13 +192,6 @@ export class UserPage implements OnInit {
     this.router.navigate(['/settings']);
   }
 
-  reportIssue(): void {
-    window.open(
-      'https://cesizenlgi.atlassian.net/jira/software/form/1ac51179-2bd3-49c3-944b-c0ce0fbbb1dd?atlOrigin=eyJpIjoiNDIzODk2ZjJjMDY2NDAwZmI5NTJlOGE4NTI5MGFiNmQiLCJwIjoiaiJ9',
-      '_blank'
-    );
-  }
-
   async showForgotPasswordAlert(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Réinitialisation',
