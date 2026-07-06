@@ -72,8 +72,8 @@ export class UserPage implements OnInit {
   private router = inject(Router);
   private alertController = inject(AlertController);
 
-  username: string = 'lou';
-  password: string = 'abcd';
+  username: string = '';
+  password: string = '';
   passwordConfirm: string = '';
   showPassword: boolean = false;
   isLoggedIn: boolean = false;
@@ -114,7 +114,10 @@ export class UserPage implements OnInit {
       this.errorMessage = 'Veuillez remplir tous les champs.';
       return;
     }
-    const user: UserCredentials = { username: this.username, password: this.password };
+    const user: UserCredentials = {
+      username: this.username,
+      password: this.password,
+    };
     this.authSrv.login(user).subscribe({
       next: (response) => {
         console.log('Connexion réussie !', response);
@@ -154,7 +157,10 @@ export class UserPage implements OnInit {
       return;
     }
 
-    const newUser: UserCredentials = { username: this.username, password: this.password };
+    const newUser: UserCredentials = {
+      username: this.username,
+      password: this.password,
+    };
 
     this.authSrv.register(newUser).subscribe({
       next: (res) => {
@@ -184,10 +190,6 @@ export class UserPage implements OnInit {
 
   openSettings(): void {
     this.router.navigate(['/settings']);
-  }
-
-  reportIssue(): void {
-    window.open('https://github.com/LouGitta/cezizen/issues', '_blank');
   }
 
   async showForgotPasswordAlert(): Promise<void> {

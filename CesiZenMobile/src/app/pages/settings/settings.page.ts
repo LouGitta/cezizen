@@ -26,6 +26,9 @@ import {
   informationCircleOutline,
   trashOutline,
   lockClosedOutline,
+  helpBuoyOutline,
+  bugOutline,
+  bulbOutline,
 } from 'ionicons/icons';
 
 import { Router } from '@angular/router';
@@ -77,6 +80,9 @@ export class SettingsPage {
       informationCircleOutline,
       trashOutline,
       lockClosedOutline,
+      helpBuoyOutline,
+      bugOutline,
+      bulbOutline,
     });
   }
 
@@ -170,5 +176,19 @@ export class SettingsPage {
         console.error('Erreur lors de la suppression du compte :', err);
       },
     });
+  }
+
+  reportBug(): void {
+    window.open(
+      'https://cesizenlgi.atlassian.net/jira/software/form/1ac51179-2bd3-49c3-944b-c0ce0fbbb1dd?atlOrigin=eyJpIjoiNDIzODk2ZjJjMDY2NDAwZmI5NTJlOGE4NTI5MGFiNmQiLCJwIjoiaiJ9',
+      '_blank'
+    );
+  }
+
+  requestFeature(): void {
+    window.open(
+      'https://cesizenlgi.atlassian.net/jira/software/form/ea98ea68-0ef2-4787-91ca-a14d9e2e0768?atlOrigin=eyJpIjoiZTE3NGIzNmY4MmQ3NDYzMmI0OWM1MDc3NTI2NTJkYTciLCJwIjoiaiJ9',
+      '_blank'
+    );
   }
 }
