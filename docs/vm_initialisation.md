@@ -102,4 +102,4 @@ docker compose version
 ```
 
 ---
-*Vous pouvez maintenant procéder à l'étape 2 du [Plan de Reprise d'Activité (PRA)](file:///c:/Users/lougi/Dev/cezizen/pra_procedure.md) pour transférer et lancer les fichiers de configuration du projet.*
+*Vous pouvez maintenant procéder à l'étape 2 du [Plan de Reprise d'Activité (PRA)](pra_procedure.md) pour transférer et lancer les fichiers de configuration du projet.*
