@@ -3,21 +3,21 @@
     <ion-buttons>
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title class="zen-main-title">Ressources Zen </ion-title>
-  </ion-toolbar>
+    <ion-title class="zen-main-title">Ressources Zen</ion-title>
+  </ion-toolbar>  
 
   <ion-toolbar class="zen-segment-toolbar">
     <ion-segment [(ngModel)]="selectedCategory" mode="ios" class="zen-segment" scrollable="true">
       <ion-segment-button [value]="0">
         <ion-label>Tous</ion-label>
       </ion-segment-button>
-
+      
       @if (isLoggedIn) {
-      <ion-segment-button value="favoris">
-        <ion-label>Favoris</ion-label>
-      </ion-segment-button>
+        <ion-segment-button value="favoris">
+          <ion-label>Favoris</ion-label>
+        </ion-segment-button>
       }
-
+      
       <ion-segment-button [value]="1">
         <ion-label>Sommeil</ion-label>
       </ion-segment-button>
@@ -32,56 +32,56 @@
 </ion-header>
 
 <ion-content class="zen-content ion-padding">
-
+  
   <ion-grid>
     <ion-row>
-
+      
       @for (article of filteredArticles; track article.id) {
-
-      <ion-col size="12" size-md="6" size-lg="4" style="display: flex;">
-
-        <ion-card class="zen-card" mode="ios" button="true" (click)="goToArticle(article.id, article)"
-          style="width: 100%; position: relative; height: 100%; margin: 0; display: flex; flex-direction: column;">
-          @if (isLoggedIn) {
-          <div class="zen-favorite-btn" (click)="toggleFavorite($event, article)">
-            <ion-icon [name]="article.is_favorite ? 'heart' : 'heart-outline'"
-              [color]="article.is_favorite ? 'danger' : 'medium'">
-            </ion-icon>
-          </div>
+        
+        <ion-col size="12" size-md="6" size-lg="4" style="display: flex;">
+          
+          <ion-card class="zen-card" mode="ios" button="true" (click)="goToArticle(article.id, article)" style="width: 100%; position: relative; height: 100%; margin: 0; display: flex; flex-direction: column;">
+            @if (isLoggedIn) {
+            <div class="zen-favorite-btn" (click)="toggleFavorite($event, article)">
+              <ion-icon 
+                [name]="article.is_favorite ? 'heart' : 'heart-outline'" 
+                [color]="article.is_favorite ? 'danger' : 'medium'">
+              </ion-icon>
+            </div>
           }
+            
+            <div class="zen-card-image-wrapper">
+              @if (article.image) {
+                <ion-img [src]="article.image" [alt]="article.title"></ion-img>
+              } @else {
+                <ion-img src="https://ionicframework.com/docs/img/demos/card-media.png" [alt]="article.title"></ion-img>
+              }
+            </div>
+            
+            <ion-card-header>
+              <ion-card-title class="zen-card-title">{{ article.title }}</ion-card-title>
+              <p class="zen-card-date">Publié le {{ article.published | date:'dd MMMM yyyy' }}</p>
+            </ion-card-header>
 
-          <div class="zen-card-image-wrapper">
-            @if (article.image) {
-            <ion-img [src]="article.image" [alt]="article.title"></ion-img>
-            } @else {
-            <ion-img src="https://ionicframework.com/docs/img/demos/card-media.png" [alt]="article.title"></ion-img>
-            }
-          </div>
-
-          <ion-card-header>
-            <ion-card-title class="zen-card-title">{{ article.title }}</ion-card-title>
-            <p class="zen-card-date">Publié le {{ article.published | date:'dd MMMM yyyy' }}</p>
-          </ion-card-header>
-
-          <ion-card-content class="zen-card-action" style="margin-top: auto;">
-            <span>Découvrir</span>
-            <ion-icon name="arrow-forward-outline"></ion-icon>
-          </ion-card-content>
-
-        </ion-card>
-
-      </ion-col>
+            <ion-card-content class="zen-card-action" style="margin-top: auto;">
+              <span>Découvrir</span>
+              <ion-icon name="arrow-forward-outline"></ion-icon>
+            </ion-card-content>
+            
+          </ion-card>
+          
+        </ion-col>
       }
-
+      
       @if (filteredArticles.length === 0) {
-      <ion-col size="12">
-        <div class="ion-text-center zen-empty-state">
-          <ion-icon name="leaf-outline" style="font-size: 3rem; color: #A0ABA1; margin-bottom: 10px;"></ion-icon>
-          <p>Aucun article dans cette catégorie pour le moment.</p>
-        </div>
-      </ion-col>
+        <ion-col size="12">
+          <div class="ion-text-center zen-empty-state">
+            <ion-icon name="leaf-outline" style="font-size: 3rem; color: #A0ABA1; margin-bottom: 10px;"></ion-icon>
+            <p>Aucun article dans cette catégorie pour le moment.</p>
+          </div>
+        </ion-col>
       }
-
+      
     </ion-row>
   </ion-grid>
-</ion-content>
+  </ion-content>
