@@ -2,9 +2,10 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from ckeditor.fields import RichTextField
+from django_prometheus.models import ExportModelOperationsMixin
 
 
-class BreathingExercice(models.Model):
+class BreathingExercice(ExportModelOperationsMixin("breathing_exercice"), models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     inhale = models.IntegerField()
@@ -17,7 +18,7 @@ class BreathingExercice(models.Model):
         return self.name
 
 
-class Category(models.Model):
+class Category(ExportModelOperationsMixin("category"), models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
 
@@ -25,7 +26,7 @@ class Category(models.Model):
         return self.name
 
 
-class Article(models.Model):
+class Article(ExportModelOperationsMixin("article"), models.Model):
     id = models.AutoField(primary_key=True)
     image = models.URLField(blank=True, null=True)
     title = models.CharField(max_length=100)
@@ -38,7 +39,7 @@ class Article(models.Model):
         return self.title
 
 
-class Favorite(models.Model):
+class Favorite(ExportModelOperationsMixin("favorite"), models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     article = models.ForeignKey(Article, on_delete=models.CASCADE)

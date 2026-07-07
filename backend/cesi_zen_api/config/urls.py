@@ -39,4 +39,5 @@ urlpatterns = [
     path("api/auth/register/", views.RegisterView.as_view(), name="register"),
     path("api/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("metrics", views.custom_metrics_view, name="prometheus-django-metrics"),
 ]
