@@ -19,11 +19,9 @@ Dès la création de la VM, connectez-vous en SSH et exécutez ce bloc pour tout
 sudo apt-get update && sudo apt-get upgrade -y
 sudo apt-get install -y docker.io docker-compose-v2 make build-essential
 
-# 2. Ajout de l'utilisateur dev au groupe docker pour éviter d'utiliser sudo
-sudo usermod -aG docker dev
+# 2. Ajout de l'utilisateur SSH au groupe docker pour éviter d'utiliser sudo
+sudo usermod -aG docker <VOTRE_UTILISATEUR_SSH>
 newgrp docker
-```
-*Note : Si votre utilisateur SSH s'appelle autrement que `dev`, remplacez `dev` par votre nom d'utilisateur dans la commande `usermod`.*
 
 ### 🧠 Optionnel : Configuration du SWAP (Recommandé si RAM < 8 Go)
 Si votre VM manque de RAM, cela évite que les processus Docker ou SSH ne se fassent tuer aléatoirement par le système.
@@ -63,28 +61,29 @@ sudo chown -R $USER:$USER /var/www/cesizen
 cd /var/www/cesizen
 ```
 
-Déposez dans ce dossier `/var/www/cesizen/` les 3 fichiers suivants :
+Déposez dans ce dossier `/var/www/cesizen/` les fichiers et dossiers suivants :
 1. **`docker-compose.yml`** (copié depuis le dossier `.tools` de votre dépôt)
 2. **`Makefile`** (copié depuis le dossier `.tools` de votre dépôt)
 3. **`.env`** (à créer avec vos secrets)
+4. **`monitoring/`** (dossier contenant Grafana + Prometheus, copié depuis `.tools/monitoring` de votre dépôt)
 
 ### 📤 Transfert des fichiers depuis la machine locale (IDE) vers la VM
-Pour envoyer ces fichiers vers le dossier `/var/www/cesizen/` de votre VM, choisissez l'une de ces méthodes :
+
+> [!IMPORTANT]
+> **Prérequis de transfert** : Le dossier de destination sur la VM (`/var/www/cesizen/`) doit obligatoirement avoir été créé au préalable (voir ci-dessus) et être accessible en écriture par votre utilisateur SSH. Si le dossier n'existe pas, la commande `scp` échouera ou copiera les fichiers de manière incorrecte.
 
 **Méthode A : Via la commande `scp` (Dans votre terminal local Windows/Git Bash)**
 ```bash
-scp .tools/docker-compose.yml dev@IP_DE_LA_VM:/var/www/cesizen/
-scp .tools/Makefile dev@IP_DE_LA_VM:/var/www/cesizen/
-scp .tools/.env dev@IP_DE_LA_VM:/var/www/cesizen/
+scp -r .tools/docker-compose.yml .tools/Makefile .tools/.env .tools/monitoring <VOTRE_UTILISATEUR_SSH>@<IP_DE_LA_VM>:/var/www/cesizen/
 ```
 
 **Méthode B : Via VS Code (Extension Remote - SSH)**
 1. Installez l'extension **Remote - SSH**.
-2. Connectez-vous à la VM (`Ctrl+Shift+P` -> `Remote-SSH: Connect to Host...` -> `dev@IP_DE_LA_VM`).
+2. Connectez-vous à la VM (`Ctrl+Shift+P` -> `Remote-SSH: Connect to Host...` -> `<VOTRE_UTILISATEUR_SSH>@<IP_DE_LA_VM>`).
 3. Ouvrez le dossier `/var/www/cesizen` et glissez-déposez les fichiers depuis votre explorateur de fichiers local.
 
 **Méthode C : Via un client SFTP graphique**
-Utilisez un logiciel comme **WinSCP** ou **FileZilla** avec l'adresse de votre VM et vos identifiants SSH pour faire des transferts par glisser-déposer.
+Utilisez un logiciel comme **WinSCP** ou **FileZilla** avec l'adresse de votre VM et vos identifiants SSH (`<VOTRE_UTILISATEUR_SSH>`) pour faire des transferts par glisser-déposer.
 
 *Note : Vous pouvez générer une clé secrète robuste pour votre fichier `.env` en exécutant : `make secret` depuis le dossier de la VM.*
 
@@ -100,6 +99,14 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=votre_mot_de_passe_robuste
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
+```
+
+### 🔑 Ajustement des permissions pour Grafana (Requis)
+Par défaut, les fichiers copiés depuis Windows via `scp` peuvent avoir des permissions trop restrictives empêchant Grafana (qui s'exécute avec l'utilisateur interne `472`) de lire sa configuration. 
+
+**Sur votre VM**, dans `/var/www/cesizen/`, exécutez la commande suivante pour attribuer les droits nécessaires :
+```bash
+chmod -R 755 monitoring/
 ```
 
 ---
@@ -137,7 +144,7 @@ Si vous repartez à zéro et souhaitez importer les données initiales du fichie
 
 1. **Sur votre machine locale** (Windows), envoyez le fichier `db.sqlite3` vers la VM :
    ```bash
-   scp backend/cesi_zen_api/db.sqlite3 cesizen:/var/www/cesizen/
+   scp backend/cesi_zen_api/db.sqlite3 <VOTRE_UTILISATEUR_SSH>@<IP_DE_LA_VM>:/var/www/cesizen/
    ```
 2. **Sur votre VM** (SSH), connectez-vous, allez dans `/var/www/cesizen` et exécutez ces commandes :
    ```bash
@@ -188,3 +195,12 @@ Voici les commandes simplifiées à votre disposition depuis `/var/www/cesizen/`
 * **`make ps`** : Affiche l'état des conteneurs (Up / Exited).
 * **`make secret`** : Génère une clé secrète sécurisée pour Django.
 * **`make backup`** : Crée un export SQL instantané dans le dossier `backups/`.
+
+---
+
+## 📊 Accès aux outils de Monitoring
+
+Une fois la stack démarrée avec `make up`, les outils de monitoring sont accessibles à ces adresses :
+* **Grafana** (Visualisation & Tableaux de bord) : `http://<IP_DE_LA_VM>:3000` (identifiants par défaut: `admin` / `admin`)
+* **Prometheus** (Base de données temporelle de métriques) : `http://<IP_DE_LA_VM>:9090`
+* **cAdvisor** (Métriques de conteneurs en temps réel) : `http://<IP_DE_LA_VM>:8080`
