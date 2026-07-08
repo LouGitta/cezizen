@@ -51,6 +51,47 @@ services:
       - backend
     restart: unless-stopped
 
+  # --- Service de collecte de métriques des conteneurs ---
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cesizen-cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+
+  # --- Service Prometheus (Stockage des métriques) ---
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: cesizen-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+      - cadvisor
+    restart: unless-stopped
+
+  # --- Service Grafana (Visualisation des métriques) ---
+  grafana:
+    image: grafana/grafana:latest
+    container_name: cesizen-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
 volumes:
   django_static:
   postgres_data:

@@ -2,6 +2,10 @@ from django.contrib.auth.models import Group, User
 from rest_framework import permissions, viewsets, generics, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+import os
+import prometheus_client
+from django.http import HttpResponse
+from prometheus_client import multiprocess, Gauge
 
 from .serializer import (
     GroupSerializer,
@@ -161,3 +165,27 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+# --- Custom Prometheus Database Gauges ---
+USER_COUNT = Gauge('django_db_users_total', 'Total number of users in the database')
+ARTICLE_COUNT = Gauge('django_db_articles_total', 'Total number of articles in the database')
+EXERCISE_COUNT = Gauge('django_db_exercises_total', 'Total number of breathing exercises in the database')
+FAVORITE_COUNT = Gauge('django_db_favorites_total', 'Total number of favorites in the database')
+
+def custom_metrics_view(request):
+    # Update gauge values with live database counts
+    USER_COUNT.set(User.objects.count())
+    ARTICLE_COUNT.set(Article.objects.count())
+    EXERCISE_COUNT.set(BreathingExercice.objects.count())
+    FAVORITE_COUNT.set(Favorite.objects.count())
+    
+    # Process multiprocess aggregation if configured
+    if "PROMETHEUS_MULTIPROC_DIR" in os.environ or "prometheus_multiproc_dir" in os.environ:
+        registry = prometheus_client.CollectorRegistry()
+        multiprocess.MultiProcessCollector(registry)
+    else:
+        registry = prometheus_client.REGISTRY
+        
+    metrics_page = prometheus_client.generate_latest(registry)
+    return HttpResponse(metrics_page, content_type=prometheus_client.CONTENT_TYPE_LATEST)
