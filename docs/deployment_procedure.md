@@ -86,10 +86,41 @@ Déposez dans ce dossier `/var/www/cesizen/` les fichiers et dossiers suivants :
 3. **`.env`** (à créer avec vos secrets)
 4. **`monitoring/`** (dossier contenant Grafana + Prometheus, copié depuis `.tools/monitoring` de votre dépôt)
 
-### 📤 Transfert des fichiers depuis la machine locale (IDE) vers la VM
+### 📥 Récupération des fichiers de configuration sur la VM
+
+Pour faire fonctionner la stack en production, vous devez récupérer les fichiers de configuration (`docker-compose.yml`, `Makefile`, `.env`, et le dossier `monitoring`) sur la VM dans le dossier `/var/www/cesizen/`. 
+
+Deux méthodes s'offrent à vous :
+
+#### Option A : Téléchargement direct depuis GitHub (Recommandé - Évite de copier les fichiers localement)
+
+**Sur votre VM (via SSH) :**
+```bash
+# 1. Créer l'arborescence des dossiers sur la VM
+mkdir -p /var/www/cesizen/monitoring/prometheus
+mkdir -p /var/www/cesizen/monitoring/grafana/provisioning/dashboards
+mkdir -p /var/www/cesizen/monitoring/grafana/provisioning/datasources
+cd /var/www/cesizen/
+
+# 2. Récupérer les fichiers principaux depuis la branche main (ou develop)
+curl -L https://raw.githubusercontent.com/LouGitta/cezizen/main/.tools/docker-compose.yml -o docker-compose.yml
+curl -L https://raw.githubusercontent.com/LouGitta/cezizen/main/.tools/Makefile -o Makefile
+curl -L https://raw.githubusercontent.com/LouGitta/cezizen/main/.tools/.env -o .env
+
+# 3. Récupérer la configuration Prometheus
+curl -L https://raw.githubusercontent.com/LouGitta/cezizen/main/.tools/monitoring/prometheus/prometheus.yml -o monitoring/prometheus/prometheus.yml
+
+# 4. Récupérer la configuration et les Dashboards Grafana
+curl -L https://raw.githubusercontent.com/LouGitta/cezizen/main/.tools/monitoring/grafana/provisioning/datasources/datasource.yml -o monitoring/grafana/provisioning/datasources/datasource.yml
+curl -L https://raw.githubusercontent.com/LouGitta/cezizen/main/.tools/monitoring/grafana/provisioning/dashboards/dashboard.yml -o monitoring/grafana/provisioning/dashboards/dashboard.yml
+curl -L https://raw.githubusercontent.com/LouGitta/cezizen/main/.tools/monitoring/grafana/provisioning/dashboards/django.json -o monitoring/grafana/provisioning/dashboards/django.json
+curl -L https://raw.githubusercontent.com/LouGitta/cezizen/main/.tools/monitoring/grafana/provisioning/dashboards/cadvisor.json -o monitoring/grafana/provisioning/dashboards/cadvisor.json
+```
+
+#### Option B : Transfert depuis votre machine locale (via SCP)
 
 > [!IMPORTANT]
-> **Prérequis de transfert** : Le dossier de destination sur la VM (`/var/www/cesizen/`) doit obligatoirement avoir été créé au préalable (voir ci-dessus) et être accessible en écriture par votre utilisateur SSH. Si le dossier n'existe pas, la commande `scp` échouera ou copiera les fichiers de manière incorrecte.
+> **Prérequis de transfert** : Le dossier de destination sur la VM (`/var/www/cesizen/`) doit obligatoirement avoir été créé au préalable (voir ci-dessus) et être accessible en écriture par votre utilisateur SSH.
 
 **Depuis votre machine locale (Powershell / Windows Terminal) :**
 ```powershell
@@ -128,12 +159,10 @@ chmod -R 755 monitoring/
 
 ## 🚀 Étape 3 : Démarrage et Initialisation
 
-### 1. Se connecter à la base d'images GitHub (GHCR)
-```bash
-docker login ghcr.io -u VOTRE_USERNAME_GITHUB
-```
+> [!NOTE]
+> Les packages Docker du projet étant désormais configurés en **public** sur GitHub Packages (GHCR), l'authentification (`docker login ghcr.io`) n'est plus requise pour télécharger les images.
 
-### 2. Récupérer les images et lancer les conteneurs
+### 1. Récupérer les images et lancer les conteneurs
 ```bash
 # Télécharger les dernières images
 make pull
@@ -142,7 +171,7 @@ make pull
 make up
 ```
 
-### 3. Initialisation de l'application
+### 2. Initialisation de l'application
 Finalisez le déploiement en appliquant les schémas de base de données et en générant les fichiers statiques de l'administration :
 ```bash
 # 1. Appliquer les migrations de base de données
